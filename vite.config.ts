@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [react() ,tailwindcss(),],
   server: {
     proxy: {
-      '/api': 'http://165.227.181.238:3000'
+      '/api': {
+        target: 'http://165.227.181.238:3000',
+        changeOrigin: true,
+        secure: false
+      }
     }
   },
   preview: {
@@ -19,6 +23,19 @@ export default defineConfig({
       '.ondigitalocean.app', // Allow all DigitalOcean app platform hosts
       'localhost',
       '127.0.0.1'
-    ]
+    ],
+    proxy: {
+      '/api': {
+        target: 'http://165.227.181.238:3000',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, _options) => {
+          // Handle CORS and SSL issues
+          proxy.on('proxyReq', (proxyReq, _req, _res) => {
+            proxyReq.setHeader('origin', 'https://zia-tgsix.ondigitalocean.app');
+          });
+        }
+      }
+    }
   }
 })
