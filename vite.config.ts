@@ -28,13 +28,7 @@ export default defineConfig({
       '/api': {
         target: 'http://165.227.181.238:3000',
         changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          // Handle CORS and SSL issues
-          proxy.on('proxyReq', (proxyReq, _req, _res) => {
-            proxyReq.setHeader('origin', 'https://zia-tgsix.ondigitalocean.app');
-          });
-        }
+        secure: false
       }
     }
   }
