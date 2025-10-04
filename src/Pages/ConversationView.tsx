@@ -9,7 +9,6 @@ import Footer from '../components/Footer';
 import ConfirmationPanel from '../components/Messaging/ConfirmationPanel';
 
 const ConversationViewContent: React.FC<{ currentUser: UserProfile; conversationId: string }> = ({ currentUser, conversationId }) => {
-  const [serviceProvider, setServiceProvider] = useState<any>(null);
   const [currentUserRole, setCurrentUserRole] = useState<'USER' | 'PROVIDER'>('USER');
 
   useEffect(() => {
@@ -17,7 +16,6 @@ const ConversationViewContent: React.FC<{ currentUser: UserProfile; conversation
       try {
         const serviceRes = await serviceApi.getServiceByConversationId(conversationId);
         if (serviceRes.success && serviceRes.data && serviceRes.data.provider) {
-          setServiceProvider(serviceRes.data.provider);
           const provider = serviceRes.data.provider as any;
           const providerUserId = provider.userId;
           const isProvider = currentUser.id === providerUserId;

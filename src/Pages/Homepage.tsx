@@ -2,7 +2,7 @@ import ServicesGrid from '../components/ServicesGrid';
 import Orb from '../components/Orb';
 import Footer from '../components/Footer';
 import useServices from '../hooks/useServices';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, MapPin, ChevronDown, Globe, Map, Home, X, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { semanticSearchApi } from '../api/semanticSearchApi';
