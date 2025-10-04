@@ -25,7 +25,7 @@ class ChatbotAPI {
   constructor() {
     // Updated to point to backend service instead of communication service
     this.baseURL = import.meta.env.DEV 
-      ? 'http://localhost:3000' // Backend service port
+      ? 'http://165.227.181.238:3000' // Backend service port
       : '/api'; // Production API proxy
   }
 

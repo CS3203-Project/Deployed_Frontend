@@ -220,7 +220,7 @@ export const messagingApi = {
 // User search API (using the main backend)
 export const userApi = {
   async searchUsers(query: string, token: string): Promise<SearchUser[]> {
-    const response = await fetch(`http://localhost:3000/api/users/search?q=${encodeURIComponent(query)}`, {
+    const response = await fetch(`http://165.227.181.238:3000/api/users/search?q=${encodeURIComponent(query)}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
