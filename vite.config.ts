@@ -9,5 +9,16 @@ export default defineConfig({
     proxy: {
       '/api': 'http://165.227.181.238:3000'
     }
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 3000,
+    strictPort: false,
+    allowedHosts: [
+      'zia-tgsix.ondigitalocean.app',
+      '.ondigitalocean.app', // Allow all DigitalOcean app platform hosts
+      'localhost',
+      '127.0.0.1'
+    ]
   }
 })
