@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://165.227.181.238:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://16.16.169.133/api';
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
