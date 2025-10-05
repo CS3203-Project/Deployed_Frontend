@@ -51,3 +51,9 @@ jobs:
     - name: Build
       run: pnpm run --if-present build
 
+    - name: Deploy to server
+      run: |
+        echo "Deploying to production server..."
+        # Add your deployment commands here
+        # Make sure the server has compatible Node.js version
+
