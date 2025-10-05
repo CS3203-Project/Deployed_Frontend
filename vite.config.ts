@@ -22,7 +22,8 @@ export default defineConfig({
       'zia-tgsix.ondigitalocean.app',
       '.ondigitalocean.app', // Allow all DigitalOcean app platform hosts
       'localhost',
-      '127.0.0.1'
+      '127.0.0.1',
+      '16.16.252.221'
     ],
     proxy: {
       '/api': {
