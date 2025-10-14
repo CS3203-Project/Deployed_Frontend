@@ -26,3 +26,11 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+.env
+.env.local
+.env.*.local
+
+# Testing coverage reports
+coverage/
+*.lcov

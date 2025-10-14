@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { LoaderProvider } from './components/LoaderContext';
 import Layout from './components/Layout';
 import { Chatbot } from './components/Chatbot';
-import Homepage from './Pages/Homepage.js'
+// import Homepage from './Pages/Homepage.js'
 import HomepageEnhanced from './Pages/HomepageEnhanced';
 import Support from './Pages/Support.jsx'
 import Articles from './Pages/Articles.jsx'
@@ -17,11 +17,11 @@ import PrintingServiceProviderProfile from "./Pages/PrintingServiceProviderProfi
 
 import Signup from './Pages/Signup.tsx'
 import SignIn from './Pages/SignIn.tsx'
-import BrowseServices from './Pages/BrowseServices';
+// import BrowseServices from './Pages/BrowseServices';
 import BrowseServicesEnhanced from './Pages/BrowseServicesEnhanced';
 import ServiceCategoryPage from './Pages/ServiceCategoryPage';
 import ServiceDetailPage from './Pages/ServiceDetailPage';
-import SearchResultsPage from './Pages/SearchResultsPage';
+// import SearchResultsPage from './Pages/SearchResultsPage';
 import SearchResultsPageEnhanced from './Pages/SearchResultsPageEnhanced';
 import Profile from "./Pages/Profile.tsx";
 import BecomeProvider from "./Pages/BecomeProvider.tsx";
@@ -39,6 +39,12 @@ import EasySetup from "./Pages/EasySetup.tsx";
 import SecurePayments from "./Pages/SecurePayments.tsx";
 import CustomerManagement from "./Pages/CustomerManagement.tsx";
 import AnalyticsDashboard from "./Pages/AnalyticsDashboard.tsx";
+import PaymentHistory from "./Pages/PaymentHistory.tsx";
+import ProviderEarnings from "./Pages/ProviderEarnings.tsx";
+import CheckoutPage from "./Pages/CheckoutPage.tsx";
+import NotificationsPage from "./Pages/NotificationsPage";
+import ServiceRequestPage from "./Pages/ServiceRequestPage";
+import ServiceRequestMatchesPage from "./Pages/ServiceRequestMatchesPage";
 
 function App() {
   return (
@@ -48,7 +54,7 @@ function App() {
           <Layout>
             <Routes>
             <Route path="/" element={<HomepageEnhanced />} />
-            <Route path="/homepage-original" element={<Homepage />} />
+            {/* <Route path="/homepage-original" element={<Homepage />} /> */}
             <Route path="/support" element={<Support />} />
             <Route path="/articles" element={<Articles />} />
             <Route path="/stories" element={<SucessStories />} />
@@ -61,8 +67,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/services" element={<BrowseServicesEnhanced />} />
-            <Route path="/services-original" element={<BrowseServices />} />
-            <Route path="/services/search" element={<SearchResultsPage />} />
+            {/* <Route path="/services-original" element={<BrowseServices />} /> */}
+            {/* <Route path="/services/search" element={<SearchResultsPage />} /> */}
             <Route path="/search-results-enhanced" element={<SearchResultsPageEnhanced />} />
             <Route path="/services/:categorySlug" element={<ServiceCategoryPage />} />
             <Route path="/service/:serviceId" element={<ServiceDetailPage />} />
@@ -80,8 +86,16 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin-login" element={<AdminLogin/>} />
 
+            {/* Payment Routes */}
+            <Route path="/checkout/:serviceId" element={<CheckoutPage />} />
+            <Route path="/payment-history" element={<PaymentHistory />} />
+            <Route path="/provider-earnings" element={<ProviderEarnings />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+
             <Route path="/provider/online/:id" element={<OnlineServiceProviderProfile />} />
-            <Route path="/provider/printing/:id" element={<PrintingServiceProviderProfile />} />  
+            <Route path="/provider/printing/:id" element={<PrintingServiceProviderProfile />} />
+            <Route path="/service-request" element={<ServiceRequestPage />} />
+            <Route path="/service-request/:id/matches" element={<ServiceRequestMatchesPage />} />
                     
           </Routes>
           
