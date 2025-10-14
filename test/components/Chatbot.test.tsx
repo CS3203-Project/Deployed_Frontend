@@ -20,7 +20,8 @@ describe('Chatbot Component', () => {
     mockedChatbotApi.getSuggestions.mockResolvedValue({
       success: true,
       data: {
-        suggestions: ['How do I book a service?', 'What payment methods do you accept?']
+        suggestions: ['How do I book a service?', 'What payment methods do you accept?'],
+        timestamp: new Date().toISOString()
       }
     });
   });

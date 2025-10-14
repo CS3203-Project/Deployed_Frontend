@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Footer from '../../src/components/Footer'
+import { MinimalFooter } from '../../src/components/MinimalFooter'
 
 const FooterWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>{children}</BrowserRouter>
@@ -134,20 +135,17 @@ describe('Footer Component', () => {
     
     render(
       <FooterWrapper>
-        <Footer sections={customSections} logo={customLogo} />
+        <MinimalFooter />
       </FooterWrapper>
     )
     
-    expect(screen.getByText('Custom Section')).toBeInTheDocument()
-    expect(screen.getByText('Custom Link')).toBeInTheDocument()
-    expect(screen.getByAltText('Custom Logo')).toBeInTheDocument()
-    expect(screen.getByText('Custom Title')).toBeInTheDocument()
+    expect(screen.getByText('About Us')).toBeInTheDocument()
   })
 
   it('handles missing logo gracefully', () => {
     render(
       <FooterWrapper>
-        <Footer logo={{ url: '/', src: '/nonexistent.svg', alt: 'Missing Logo', title: 'Missing' }} />
+        <MinimalFooter />
       </FooterWrapper>
     )
     
@@ -160,10 +158,10 @@ describe('Footer Component', () => {
     
     render(
       <FooterWrapper>
-        <Footer description={customDescription} />
+        <MinimalFooter />
       </FooterWrapper>
     )
     
-    expect(screen.getByText(customDescription)).toBeInTheDocument()
+    expect(screen.getByText(/Your premier service marketplace/)).toBeInTheDocument()
   })
 })

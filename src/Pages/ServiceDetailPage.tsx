@@ -1704,7 +1704,7 @@ const ServiceDetailPage: React.FC = () => {
               )}
 
               {/* Reviews Tab - REMOVED (see line 67 for TabType update) */}
-              {false && activeTab === 'reviews' && (
+              {false && (
                 <div className="space-y-6">
                   {/* Review Summary */}
                   <div className="bg-gradient-to-br from-blue-50/80 to-purple-50/80 dark:from-blue-900/40 dark:to-purple-900/40 backdrop-blur-sm rounded-3xl p-6 border border-blue-100/50 dark:border-blue-800/50 shadow-lg">
@@ -1880,7 +1880,7 @@ const ServiceDetailPage: React.FC = () => {
               )}
 
               {/* Chat Tab - REMOVED (see line 67 for TabType update) */}
-              {false && activeTab === 'chat' && (
+              {false && (
                 <div className="space-y-4">
                   {/* Enhanced Chat Header */}
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-blue-50/60 to-purple-50/60 dark:from-blue-900/40 dark:to-purple-900/40 backdrop-blur-sm -m-6 p-6 rounded-t-3xl">
