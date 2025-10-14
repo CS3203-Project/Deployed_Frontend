@@ -45,7 +45,7 @@ describe('imageUpload utilities', () => {
 
       expect(result).toBe('https://example.com/image.jpg');
       expect(mockAxiosPost).toHaveBeenCalledWith(
-        'http://localhost:3000/api/users/upload-image',
+        'http://16.16.169.133/api/users/upload-image',
         expect.any(FormData),
         {
           headers: {
