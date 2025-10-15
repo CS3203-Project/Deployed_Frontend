@@ -2,9 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
-  baseURL: import.meta.env.PROD 
-    ? '/api' // In production, use relative path (will be proxied)
-    : 'https://zia-backend-ll7ny.ondigitalocean.app/api', // In development, use direct URL
+  baseURL: 'https://zia-backend-ll7ny.ondigitalocean.app/api', // Backend API URL
   headers: {
     'Content-Type': 'application/json',
   },
