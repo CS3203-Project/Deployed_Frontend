@@ -1,5 +1,5 @@
 // Messaging API types and functions
-const BASE_URL = 'https://stingray-app-t6jhs.ondigitalocean.app/messaging';
+const BASE_URL = import.meta.env.VITE_MESSAGING_BASE_URL || '/messaging';
 
 export interface ConversationResponse {
   id: string;
