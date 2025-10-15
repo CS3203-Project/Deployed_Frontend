@@ -1109,23 +1109,23 @@ export default function Profile() {
                     
                     {/* Show basic provider info */}
                     <div className="mt-8 text-left">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Submitted Information</h3>
-                      <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Submitted Information</h3>
+                      <div className="space-y-4 p-4 rounded-lg bg-white/70 border border-gray-200 dark:bg-white/5 dark:border-white/10">
                         {providerProfile.bio && (
                           <div>
-                            <h4 className="font-medium text-gray-900 mb-1">Bio</h4>
-                            <p className="text-gray-600 text-sm">{providerProfile.bio}</p>
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-1">Bio</h4>
+                            <p className="text-gray-700 dark:text-gray-200 text-base leading-relaxed">{providerProfile.bio}</p>
                           </div>
                         )}
                         
                         {providerProfile.skills && providerProfile.skills.length > 0 && (
                           <div>
-                            <h4 className="font-medium text-gray-900 mb-2">Skills</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Skills</h4>
                             <div className="flex flex-wrap gap-2">
                               {providerProfile.skills.map((skill, index) => (
                                 <span
                                   key={index}
-                                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                                  className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-600/20 dark:text-blue-200 border border-blue-300/60 dark:border-blue-400/30 rounded-full text-sm"
                                 >
                                   {skill}
                                 </span>
@@ -1136,12 +1136,12 @@ export default function Profile() {
                         
                         {providerProfile.qualifications && providerProfile.qualifications.length > 0 && (
                           <div>
-                            <h4 className="font-medium text-gray-900 mb-2">Qualifications</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Qualifications</h4>
                             <div className="space-y-1">
                               {providerProfile.qualifications.map((qualification, index) => (
                                 <div key={index} className="flex items-center space-x-2">
-                                  <Award className="h-4 w-4 text-blue-500" />
-                                  <span className="text-gray-600 text-sm">{qualification}</span>
+                                  <Award className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                                  <span className="text-gray-700 dark:text-gray-200 text-base">{qualification}</span>
                                 </div>
                               ))}
                             </div>
@@ -1154,178 +1154,73 @@ export default function Profile() {
               ) : (
                 /* Verified Provider - existing content */
               <div className="space-y-6">
-                {/* Performance Trends Chart - Full Width */}
-                {services.length > 0 && (
-                  <div className="backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300">
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <h2 className="text-xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent flex items-center gap-2">
-                          <Activity className="h-6 w-6 text-black dark:text-white" />
-                          Performance Trends
-                        </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Service ratings and review trends</p>
+                {/* Provider Stats - Glass Morphism */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="group backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-14 h-14 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20">
+                        <Star className="h-7 w-7 text-black dark:text-white" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
+                          {providerProfile.averageRating?.toFixed(1) || 'N/A'}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Average Rating</p>
                       </div>
                     </div>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={services.slice(0, 8).map(service => ({
-                            name: service.title && service.title.length > 12 ? service.title.substring(0, 12) + '...' : service.title || 'Untitled',
-                            rating: service.averageRating || 0,
-                            reviews: service.reviewCount || 0
-                          }))}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 60 }}
-                        >
-                          <defs>
-                            <linearGradient id="ratingGradient" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#000000" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#000000" stopOpacity={0.05}/>
-                            </linearGradient>
-                            <linearGradient id="reviewsGradient" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#666666" stopOpacity={0.2}/>
-                              <stop offset="95%" stopColor="#666666" stopOpacity={0.05}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-                          <XAxis 
-                            dataKey="name" 
-                            angle={-45}
-                            textAnchor="end"
-                            height={100}
-                            tick={{ fill: 'currentColor', fontSize: 12 }}
-                            className="text-gray-700 dark:text-gray-300"
-                          />
-                          <YAxis 
-                            yAxisId="left"
-                            domain={[0, 5]}
-                            ticks={[0, 1, 2, 3, 4, 5]}
-                            tick={{ fill: 'currentColor', fontSize: 12 }}
-                            className="text-gray-700 dark:text-gray-300"
-                            label={{ value: 'Rating', angle: -90, position: 'insideLeft', fill: 'currentColor' }}
-                          />
-                          <YAxis 
-                            yAxisId="right" 
-                            orientation="right"
-                            tick={{ fill: 'currentColor', fontSize: 12 }}
-                            className="text-gray-700 dark:text-gray-300"
-                            label={{ value: 'Reviews', angle: 90, position: 'insideRight', fill: 'currentColor' }}
-                          />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                              backdropFilter: 'blur(10px)',
-                              border: '1px solid rgba(0,0,0,0.1)',
-                              borderRadius: '12px',
-                              padding: '12px',
-                              boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
-                            }}
-                            labelStyle={{ color: '#000', fontWeight: 'bold', marginBottom: '4px' }}
-                          />
-                          <Legend 
-                            wrapperStyle={{ paddingTop: '20px' }}
-                          />
-                          <Area 
-                            yAxisId="left"
-                            type="monotone" 
-                            dataKey="rating" 
-                            stroke="#ffffffff" 
-                            strokeWidth={2}
-                            fillOpacity={1} 
-                            fill="url(#ratingGradient)"
-                            name="Average Rating"
-                          />
-                          <Area 
-                            yAxisId="right"
-                            type="monotone" 
-                            dataKey="reviews" 
-                            stroke="#666666" 
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            fillOpacity={1} 
-                            fill="url(#reviewsGradient)"
-                            name="Total Reviews"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
+                    <div className="flex items-center space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-5 w-5 ${
+                            i < Math.floor(providerProfile.averageRating || 0)
+                              ? 'text-black dark:text-white fill-current'
+                              : 'text-gray-300 dark:text-gray-600'
+                          }`}
+                        />
+                      ))}
                     </div>
                   </div>
-                )}
-
-                {/* Performance Summary - Data from Graph */}
-                {services.length > 0 && (() => {
-                  const graphData = services.slice(0, 8);
-                  const totalRating = graphData.reduce((sum, service) => sum + (service.averageRating || 0), 0);
-                  const totalReviews = graphData.reduce((sum, service) => sum + (service.reviewCount || 0), 0);
-                  const overallAverageRating = graphData.length > 0 ? totalRating / graphData.length : 0;
                   
-                  return (
-                    <div className="backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300">
-                      <div className="flex items-center justify-between mb-6">
-                        <div>
-                          <h2 className="text-xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent flex items-center gap-2">
-                            <TrendingUp className="h-6 w-6 text-black dark:text-white" />
-                            Performance Summary
-                          </h2>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Aggregated data from your top services</p>
-                        </div>
+                  <div className="group backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-14 h-14 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20">
+                        <Award className="h-7 w-7 text-black dark:text-white" />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20 mx-auto mb-3">
-                            <Star className="h-8 w-8 text-black dark:text-white" />
-                          </div>
-                          <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
-                            {overallAverageRating.toFixed(1)}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Average Rating</p>
-                          <div className="flex items-center justify-center space-x-1 mt-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${
-                                  i < Math.floor(overallAverageRating)
-                                    ? 'text-black dark:text-white fill-current'
-                                    : 'text-gray-300 dark:text-gray-600'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20 mx-auto mb-3">
-                            <Award className="h-8 w-8 text-black dark:text-white" />
-                          </div>
-                          <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
-                            {totalReviews}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Total Reviews</p>
-                          <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold mt-2">
-                            {totalReviews > 0 
-                              ? `✨ ${((overallAverageRating) / 5 * 100).toFixed(0)}% satisfaction`
-                              : 'No reviews yet'
-                            }
-                          </p>
-                        </div>
-                        
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20 mx-auto mb-3">
-                            <Briefcase className="h-8 w-8 text-black dark:text-white" />
-                          </div>
-                          <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
-                            {services.length}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Services Listed</p>
-                          <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold mt-2">
-                            ✓ {services.filter(s => s.isActive).length} active • {services.filter(s => !s.isActive).length} inactive
-                          </p>
-                        </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
+                          {providerProfile.totalReviews || 0}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Total Reviews</p>
                       </div>
                     </div>
-                  );
-                })()}
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold">
+                      {providerProfile.totalReviews && providerProfile.totalReviews > 0 
+                        ? `✨ ${((providerProfile.averageRating || 0) / 5 * 100).toFixed(0)}% satisfaction`
+                        : 'No reviews yet'
+                      }
+                    </p>
+                  </div>
+                  
+                  <div className="group backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-14 h-14 bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 dark:border-white/20">
+                        <Briefcase className="h-7 w-7 text-black dark:text-white" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text text-transparent">
+                          {services.length}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Services Listed</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold">
+                      ✓ {services.filter(s => s.isActive).length} active • {services.filter(s => !s.isActive).length} inactive
+                    </p>
+                  </div>
+                </div>
 
-                {/* Bio - Glass Morphism */}
+                {/* Performance Trends Chart - Full Width */}
                 {services.length > 0 && (
                   <div className="backdrop-blur-md bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] p-6 hover:shadow-[0_12px_48px_0_rgba(0,0,0,0.15)] transition-all duration-300">
                     <div className="flex items-center justify-between mb-6">
