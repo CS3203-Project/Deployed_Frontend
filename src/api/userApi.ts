@@ -365,14 +365,25 @@ export const userApi = {
 
   getProviderById: async (providerId: string): Promise<ProviderProfile> => {
     try {
+      console.log('🌐 API: Fetching provider by ID:', providerId);
       const response = await apiClient.get(`/providers/${providerId}`);
+      console.log('✅ API: Provider data received:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('❌ API: Error fetching provider by ID:', providerId, error);
       if (error.response) {
-        throw new Error(error.response.data?.message || 'Failed to fetch provider details');
+        const errorMsg = error.response.data?.message || 'Failed to fetch provider details';
+        console.error('Response error:', {
+          status: error.response.status,
+          message: errorMsg,
+          data: error.response.data
+        });
+        throw new Error(errorMsg);
       } else if (error.request) {
+        console.error('Network error:', error.request);
         throw new Error('Network error. Please check your connection.');
       } else {
+        console.error('Unknown error:', error.message);
         throw new Error('An unexpected error occurred');
       }
     }

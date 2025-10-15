@@ -232,6 +232,11 @@ const ServiceDetailPage: React.FC = () => {
 
   // Fetch provider details
   const fetchProviderDetails = async (providerId: string) => {
+    if (!providerId) {
+      console.warn('⚠️ No provider ID provided to fetchProviderDetails');
+      return;
+    }
+
     try {
       setProviderLoading(true);
       console.log('🔍 Fetching provider details for ID:', providerId);
@@ -257,7 +262,15 @@ const ServiceDetailPage: React.FC = () => {
       setProvider(providerData);
     } catch (error) {
       console.error('❌ Failed to fetch provider details:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Error details:', {
+        providerId,
+        errorMessage,
+        errorType: typeof error,
+        fullError: error
+      });
       // Don't show error toast for provider details failure as it's not critical
+      // But the page can still function with just the basic provider info from the service data
     } finally {
       setProviderLoading(false);
     }
