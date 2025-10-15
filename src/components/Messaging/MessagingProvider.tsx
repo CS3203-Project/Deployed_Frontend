@@ -53,7 +53,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
   // WebSocket integration
   const webSocket = useWebSocket({
-    url: 'http://localhost:3001/messaging',
+    url: 'http://13.49.159.218/messaging',
     userId,
     autoConnect: true,
   });

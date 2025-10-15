@@ -55,7 +55,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
       if (userRole === 'PROVIDER') {
         // Provider viewing customer details
         // Need to get conversation to find customer ID
-        const conversationRes = await fetch(`http://localhost:3001/messaging/conversations/${conversationId}`, {
+        const conversationRes = await fetch(`http://13.49.159.218/messaging/conversations/${conversationId}`, {
           headers: {
             'Content-Type': 'application/json',
           },

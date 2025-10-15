@@ -1,5 +1,5 @@
 // Messaging API types and functions
-const BASE_URL = 'http://localhost:3001/messaging';
+const BASE_URL = 'http://13.49.159.218/messaging';
 
 export interface ConversationResponse {
   id: string;
