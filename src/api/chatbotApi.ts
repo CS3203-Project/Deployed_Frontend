@@ -25,7 +25,7 @@ class ChatbotAPI {
   constructor() {
     // Updated to point to backend service instead of communication service
     this.baseURL = import.meta.env.DEV 
-      ? 'http://16.16.169.133' // Backend service port
+      ? 'https://zia-backend-ll7ny.ondigitalocean.app' // Backend service port
       : '/api'; // Production API proxy
   }
 

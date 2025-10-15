@@ -53,7 +53,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
   // WebSocket integration
   const webSocket = useWebSocket({
-    url: 'http://13.49.159.218/messaging',
+    url: 'https://stingray-app-t6jhs.ondigitalocean.app/messaging',
     userId,
     autoConnect: true,
   });

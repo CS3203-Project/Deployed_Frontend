@@ -1,5 +1,5 @@
 // Messaging API types and functions
-const BASE_URL = 'http://13.49.159.218/messaging';
+const BASE_URL = 'https://stingray-app-t6jhs.ondigitalocean.app/messaging';
 
 export interface ConversationResponse {
   id: string;
@@ -220,7 +220,7 @@ export const messagingApi = {
 // User search API (using the main backend)
 export const userApi = {
   async searchUsers(query: string, token: string): Promise<SearchUser[]> {
-    const response = await fetch(`http://16.16.169.133/api/users/search?q=${encodeURIComponent(query)}`, {
+    const response = await fetch(`https://zia-backend-ll7ny.ondigitalocean.app/api/users/search?q=${encodeURIComponent(query)}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

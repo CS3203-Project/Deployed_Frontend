@@ -28,7 +28,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://16.16.169.133',
+        target: 'https://zia-backend-ll7ny.ondigitalocean.app',
         changeOrigin: true,
         secure: false
       }
@@ -47,7 +47,7 @@ export default defineConfig({
     ],
     proxy: {
       '/api': {
-        target: 'http://16.16.169.133',
+        target: 'https://zia-backend-ll7ny.ondigitalocean.app',
         changeOrigin: true,
         secure: false
       }

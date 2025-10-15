@@ -45,7 +45,7 @@ describe('imageUpload utilities', () => {
 
       expect(result).toBe('https://example.com/image.jpg');
       expect(mockAxiosPost).toHaveBeenCalledWith(
-        'http://16.16.169.133/api/users/upload-image',
+        'https://zia-backend-ll7ny.ondigitalocean.app/api/users/upload-image',
         expect.any(FormData),
         {
           headers: {

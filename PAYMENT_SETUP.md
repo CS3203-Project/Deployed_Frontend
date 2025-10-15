@@ -40,7 +40,7 @@ Update the `.env` file with your Stripe publishable key:
 
 ```env
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
-VITE_API_URL=http://16.16.169.133/api
+VITE_API_URL=https://zia-backend-ll7ny.ondigitalocean.app/api
 ```
 
 ### 2. Backend Requirements
