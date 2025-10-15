@@ -31,7 +31,7 @@ class ChatbotAPI {
 
   async askQuestion(message: string): Promise<ChatbotResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/api/chatbot/ask`, {
+      const response = await fetch(`${this.baseURL}/chatbot/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ class ChatbotAPI {
 
   async getSuggestions(): Promise<SuggestionsResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/api/chatbot/suggestions`, {
+      const response = await fetch(`${this.baseURL}/chatbot/suggestions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
