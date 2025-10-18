@@ -39,15 +39,12 @@ export default function Homepage() {
 
     // Allow search with just query OR just location OR both
     if (!hasQuery && !hasLocation) {
-      console.log('No search query or location provided - redirecting to browse');
       navigate('/services');
       return;
     }
 
     try {
       setIsSearching(true);
-      console.log('🔍 Performing hybrid search for:', searchQuery, 'with location:', locationFilter);
-      
       const response = await hybridSearchApi.searchServices({
         query: hasQuery ? searchQuery.trim() : undefined,
         location: hasLocation ? locationFilter : undefined,
@@ -57,8 +54,6 @@ export default function Homepage() {
       });
 
       if (response.success) {
-        console.log('✅ Search results:', response.data);
-        
         // Navigate to enhanced search results page
         navigate('/search-results-enhanced', { 
           state: { 
@@ -107,8 +102,8 @@ export default function Homepage() {
 
             {/* Main Heading */}
             <h1 className="animate-fade-in text-balance bg-gradient-to-br from-black from-30% to-black/40 dark:from-white dark:to-white/40 bg-clip-text py-6 text-5xl font-semibold leading-none tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl mb-6">
-              <span className="block">Discover the right people.</span>
-              <span className="block">Skills. Services. Social.</span>
+              <span className="block">The Ignite</span>
+              <span className="block">Talent. Services. Social.</span>
             </h1>
 
             {/* Subtitle */}

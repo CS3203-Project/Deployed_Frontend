@@ -125,7 +125,6 @@ const ServiceCategoryPage: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching category with slug:', categorySlug);
         
         const response = await categoryApi.getCategoryBySlug(categorySlug, {
           includeChildren: true,
@@ -134,7 +133,6 @@ const ServiceCategoryPage: React.FC = () => {
         
         if (response.success) {
           setCategory(response.data);
-          console.log('Category found:', response.data);
         } else {
           setError('Category not found');
         }
@@ -146,15 +144,9 @@ const ServiceCategoryPage: React.FC = () => {
           const axiosError = err as { response?: { status?: number } };
           if (axiosError.response?.status === 404) {
             try {
-              console.log('Category not found, fetching all available categories...');
               const allCategoriesResponse = await categoryApi.getCategories();
               if (allCategoriesResponse.success) {
-                console.log('Available categories:', allCategoriesResponse.data.map(cat => ({
-                  id: cat.id,
-                  name: cat.name,
-                  slug: cat.slug,
-                  parentId: cat.parentId
-                })));
+
               }
             } catch (fetchAllError) {
               console.error('Failed to fetch all categories:', fetchAllError);

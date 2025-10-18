@@ -59,7 +59,6 @@ const CheckoutPage: React.FC = () => {
   }, [serviceId, navigate]);
 
   const handlePaymentSuccess = (paymentId: string) => {
-    console.log('Payment successful:', paymentId);
     setStep('success');
     toast.success('Payment completed successfully!');
   };

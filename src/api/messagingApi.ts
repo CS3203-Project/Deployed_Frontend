@@ -56,8 +56,7 @@ export const messagingApi = {
   async createConversation(data: CreateConversationDto): Promise<ConversationResponse> {
     const token = localStorage.getItem('authToken') || localStorage.getItem('token');
     
-    console.log('Creating conversation with token:', token ? 'Token present' : 'No token');
-    console.log('Request data:', data);
+
     
     const response = await fetch(`${BASE_URL}/conversations`, {
       method: 'POST',
@@ -68,10 +67,6 @@ export const messagingApi = {
       credentials: 'include',
       body: JSON.stringify(data),
     });
-    
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers);
-    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('API Error:', errorData);
@@ -79,7 +74,6 @@ export const messagingApi = {
     }
     
     const result = await response.json();
-    console.log('Conversation created successfully:', result);
     return result;
   },
 
@@ -103,10 +97,8 @@ export const messagingApi = {
 
   async findConversationByParticipants(participantOne: string, participantTwo: string): Promise<ConversationResponse | null> {
     try {
-      console.log('Finding conversation between:', participantOne, 'and', participantTwo);
       const response = await fetch(`${BASE_URL}/conversations/between/${participantOne}/${participantTwo}`);
       
-      console.log('Find conversation response status:', response.status);
       
       if (response.status === 404) {
         return null; // No conversation found
@@ -119,8 +111,6 @@ export const messagingApi = {
       }
       
       const responseText = await response.text();
-      console.log('Find conversation response:', responseText);
-      
       if (!responseText) {
         return null;
       }
@@ -150,8 +140,6 @@ export const messagingApi = {
   async sendMessage(data: CreateMessageDto): Promise<MessageResponse> {
     const token = localStorage.getItem('authToken') || localStorage.getItem('token');
     
-    console.log('Sending message with token:', token ? 'Token present' : 'No token');
-    console.log('Message data:', data);
     
     const response = await fetch(`${BASE_URL}/messages`, {
       method: 'POST',
@@ -163,7 +151,6 @@ export const messagingApi = {
       body: JSON.stringify(data),
     });
     
-    console.log('Message response status:', response.status);
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -172,7 +159,6 @@ export const messagingApi = {
     }
     
     const result = await response.json();
-    console.log('Message sent successfully:', result);
     return result;
   },
 

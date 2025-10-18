@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Star, Heart, MapPin, Clock, MessageCircle, Phone, Mail, ArrowLeft, Calendar, 
-  Shield, Award, ChevronLeft, ChevronRight, Send, Bookmark, Share2, Eye,
-  CheckCircle, Users, ThumbsUp, User, GraduationCap, CreditCard, Github, Linkedin, Twitter, ArrowUpRight
+import {
+  Star, Heart, MapPin, Clock, MessageCircle, Phone, Mail, ArrowLeft, Calendar,
+  Shield, Award, ChevronLeft, ChevronRight, Send, Bookmark, Eye,
+  CheckCircle, Users, ThumbsUp, User, GraduationCap, CreditCard, Github, Linkedin, Twitter, ArrowUpRight, QrCode, Download, Share2
 } from 'lucide-react';
 import { serviceApi, type ServiceResponse } from '../api/serviceApi';
 import { serviceReviewApi, type ServiceReview, type ReviewStats } from '../api/serviceReviewApi';
@@ -19,6 +19,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import { cn } from '../utils/utils';
 import { confirmationApi } from '../api/confirmationApi';
 import GlassmorphismProfileCard from '../components/ui/ProfileCard';
+import Button from '@/components/Button';
+import QRCode from 'react-qr-code';
+import * as QRCodeLib from 'qrcode';
 
 interface DetailedService {
   id: string;
@@ -71,6 +74,7 @@ const ServiceDetailPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuth();
+
   const [service, setService] = useState<DetailedService | null>(null);
   const [provider, setProvider] = useState<ProviderProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,6 +113,14 @@ const ServiceDetailPage: React.FC = () => {
   
   // Payment modal state
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // QR code state
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+  // Schedule state
+  const [currentSchedules, setCurrentSchedules] = useState<{ startTime: string; endTime: string }[]>([]);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
 
   // Calculate total media items (video + images)
   const totalMediaItems = service ? (service.videoUrl ? 1 : 0) + service.images.length : 0;
@@ -148,23 +160,19 @@ const ServiceDetailPage: React.FC = () => {
     }
   }, [reviews.length]);
 
+  // Generate QR code URL for sharing
+  useEffect(() => {
+    if (service) {
+      const currentUrl = window.location.href;
+      setQrCodeUrl(currentUrl);
+    }
+  }, [service]);
+
   // Transform ServiceResponse (API data) to DetailedService format
   const transformApiService = (apiService: ServiceResponse): DetailedService => {
-    console.log('🔄 Transforming API service data:', apiService);
-    console.log('🏢 Service provider data from API:');
-    console.log('  - Provider ID:', apiService.provider?.id);
-    console.log('  - Provider User Data:', apiService.provider?.user);
+
     if (apiService.provider?.user) {
-      console.log('    - First Name:', apiService.provider.user.firstName);
-      console.log('    - Last Name:', apiService.provider.user.lastName);
-      console.log('    - Email:', apiService.provider.user.email);
-      console.log('    - Image URL:', apiService.provider.user.imageUrl);
-      console.log('    - Location:', (apiService.provider.user as any).location);
-      console.log('    - Phone:', (apiService.provider.user as any).phone);
     }
-    console.log('  - Average Rating:', apiService.provider?.averageRating);
-    console.log('  - Total Reviews:', apiService.provider?.totalReviews);
-    
     return {
       id: apiService.id,
       title: apiService.title || 'Untitled Service',
@@ -209,26 +217,7 @@ const ServiceDetailPage: React.FC = () => {
   const fetchProviderDetails = async (providerId: string) => {
     try {
       setProviderLoading(true);
-      console.log('🔍 Fetching provider details for ID:', providerId);
       const providerData = await userApi.getProviderById(providerId);
-      console.log('✅ Provider data received:', providerData);
-      console.log('📋 Provider fields breakdown:');
-      console.log('  - Provider ID:', providerData?.id);
-      console.log('  - User ID:', providerData?.userId);
-      console.log('  - Bio:', providerData?.bio);
-      console.log('  - Skills:', providerData?.skills);
-      console.log('  - Qualifications:', providerData?.qualifications);
-      console.log('  - Logo URL:', providerData?.logoUrl);
-      console.log('  - Average Rating:', providerData?.averageRating);
-      console.log('  - Total Reviews:', providerData?.totalReviews);
-      console.log('  - Is Verified:', providerData?.isVerified);
-      console.log('👤 User details (via relation):');
-      console.log('  - First Name:', providerData?.user?.firstName);
-      console.log('  - Last Name:', providerData?.user?.lastName);
-      console.log('  - Email:', providerData?.user?.email);
-      console.log('  - Image URL:', providerData?.user?.imageUrl);
-      console.log('  - Location:', providerData?.user?.location);
-      console.log('  - Phone:', providerData?.user?.phone);
       setProvider(providerData);
     } catch (error) {
       console.error('❌ Failed to fetch provider details:', error);
@@ -262,6 +251,26 @@ const ServiceDetailPage: React.FC = () => {
     }
   };
 
+  // Fetch current schedules
+  const fetchCurrentSchedules = async (serviceId: string) => {
+    try {
+      setScheduleLoading(true);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/schedule/current/${serviceId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCurrentSchedules(data.data);
+        }
+      } else {
+        console.error('Schedule API error:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching current schedules:', error);
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
   // Refetch reviews when filter changes
   useEffect(() => {
     if (service) {
@@ -281,7 +290,6 @@ const ServiceDetailPage: React.FC = () => {
         try {
           response = await serviceApi.getServiceById(serviceId);
         } catch (directError) {
-          console.log('Failed to get service by ID, trying conversation ID:', directError);
           // If direct service fetch fails, try getting service by conversation ID
           try {
             response = await serviceApi.getServiceByConversationId(serviceId);
@@ -302,6 +310,9 @@ const ServiceDetailPage: React.FC = () => {
           
           // Fetch service reviews
           await fetchServiceReviews(response.data.id);
+
+          // Fetch current schedules
+          await fetchCurrentSchedules(response.data.id);
         } else {
           toast.error('Service not found');
           navigate('/services');
@@ -319,16 +330,11 @@ const ServiceDetailPage: React.FC = () => {
   }, [serviceId, navigate]);
 
   const handleContactProvider = () => {
-    console.log('Service object:', service); // Debug log
-    console.log('Provider ID:', service?.provider?.id); // Debug log
-    
     if (service?.provider?.id) {
-      console.log('Navigating to provider page with ID:', service.provider.id); // Debug log
       // Navigate to the specific provider page with the provider ID
       navigate(`/provider/${service.provider.id}`);
     } else {
       // When provider ID is not available, show an error
-      console.log('No provider ID available'); // Debug log
       toast.error('Provider information not available');
     }
   };
@@ -336,8 +342,7 @@ const ServiceDetailPage: React.FC = () => {
   const handleBookNow = async () => {
     // Check if user is logged in
     if (!isLoggedIn || !user) {
-      toast.error('Please log in to book a service');
-      navigate('/signin');
+      setShowLoginPrompt(true);
       return;
     }
 
@@ -347,12 +352,6 @@ const ServiceDetailPage: React.FC = () => {
       return;
     }
 
-    // Debug logging
-    console.log('=== BOOK NOW DEBUG ===');
-    console.log('Current user:', user);
-    console.log('Current user ID:', user.id);
-    console.log('Service provider ID:', service.provider.id);
-    console.log('Service:', service);
 
     // Validate user IDs
     if (!user.id) {
@@ -371,14 +370,11 @@ const ServiceDetailPage: React.FC = () => {
     if (provider?.userId) {
       // We have the provider details, use the userId
       providerUserId = provider.userId;
-      console.log('Using provider user ID from provider details:', providerUserId);
     } else {
       // We need to fetch the provider to get the userId
       try {
-        console.log('Fetching provider details to get user ID...');
         const providerData = await userApi.getProviderById(service.provider.id);
         providerUserId = providerData.userId;
-        console.log('Retrieved provider user ID:', providerUserId);
       } catch (error) {
         console.error('Failed to fetch provider details:', error);
         toast.error('Unable to get provider information. Please try again.');
@@ -390,14 +386,12 @@ const ServiceDetailPage: React.FC = () => {
       setBookingLoading(true);
       
       // Check if conversation already exists (use provider's user ID, not provider ID)
-      console.log('Checking for existing conversation between:', user.id, 'and', providerUserId);
       const existingConversation = await messagingApi.findConversationByParticipants(
         user.id, 
         providerUserId
       );
 
       if (existingConversation) {
-        console.log('Found existing conversation:', existingConversation);
         toast.success('Opening existing conversation...');
         navigate(`/conversation/${existingConversation.id}`);
         return;
@@ -410,15 +404,11 @@ const ServiceDetailPage: React.FC = () => {
         serviceId: service.id // Pass the serviceId to backend
       };
 
-      console.log('Creating conversation with data:', conversationData);
-
       const conversation = await messagingApi.createConversation(conversationData);
       
-      console.log('Conversation created:', conversation);
       
       // Send initial message (use provider's user ID, not provider ID)
       const initialMessage = `Hi! I'm interested in your service: ${service.title}`;
-      console.log('Sending initial message...');
       
       await messagingApi.sendMessage({
         content: initialMessage,
@@ -427,7 +417,6 @@ const ServiceDetailPage: React.FC = () => {
         conversationId: conversation.id
       });
 
-      console.log('Initial message sent successfully');
       
       toast.success('Conversation started! Redirecting to messages...');
       
@@ -448,10 +437,6 @@ const ServiceDetailPage: React.FC = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       
       if (errorMessage.includes('User not found')) {
-        console.log('=== USER NOT FOUND ERROR ===');
-        console.log('This suggests the user IDs are not valid in the backend database');
-        console.log('User ID:', user.id);
-        console.log('Provider User ID:', providerUserId);
         debugMessagingState();
         toast.error('User validation failed. Please try logging out and back in.');
       } else if (errorMessage.includes('conversation')) {
@@ -472,8 +457,7 @@ const ServiceDetailPage: React.FC = () => {
   // Payment handlers
   const handlePayNow = () => {
     if (!isLoggedIn || !user) {
-      toast.error('Please log in to make a payment');
-      navigate('/signin');
+      setShowLoginPrompt(true);
       return;
     }
     
@@ -486,12 +470,10 @@ const ServiceDetailPage: React.FC = () => {
   };
 
   const handlePaymentSuccess = (paymentId: string) => {
-    console.log('Payment completed:', paymentId);
     // The PaymentModal will handle showing the success popup and navigation to profile
   };
 
   const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error);
     // The PaymentModal will handle showing the error popup
   };
 
@@ -537,6 +519,85 @@ const ServiceDetailPage: React.FC = () => {
         };
         setChatMessages(prev => [...prev, response]);
       }, 2000);
+    }
+  };
+
+  // Share service handler
+  const handleShareService = async () => {
+    if (!service) return;
+
+    const shareData = {
+      title: service.title,
+      text: `Check out this service: ${service.title}`,
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        // You could show a toast notification here
+        alert('Service link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Service link copied to clipboard!');
+      } catch (clipboardError) {
+        console.error('Error copying to clipboard:', clipboardError);
+      }
+    }
+  };
+
+  // Download QR code handler
+  const handleDownloadQR = async () => {
+    if (!qrCodeUrl) return;
+
+    try {
+      // Use the qrcode library to generate and download
+      // Create a temporary div to render the QR code
+      const tempDiv = document.createElement('div');
+      tempDiv.style.display = 'none';
+      document.body.appendChild(tempDiv);
+
+      // Generate QR code using the imported library
+      QRCodeLib.toCanvas(qrCodeUrl, {
+        width: 256,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      }, (error: any, canvas: HTMLCanvasElement) => {
+        if (error) {
+          console.error('QR Code generation error:', error);
+          document.body.removeChild(tempDiv);
+          alert('Unable to generate QR code. Please try again.');
+          return;
+        }
+
+        // Convert to blob and download
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${service?.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'service'}-qr-code.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+          // Clean up
+          document.body.removeChild(tempDiv);
+        }, 'image/png');
+      });
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      alert('Unable to download QR code. Please try again.');
     }
   };
 
@@ -629,6 +690,9 @@ const ServiceDetailPage: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 dark:via-white/5 to-transparent animate-shimmer"></div>
                       </div>
                       <div className="h-4 bg-gradient-to-r from-black/15 to-gray-400/25 dark:from-white/15 dark:to-gray-500/25 rounded w-3/4 animate-pulse relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 dark:via-white/5 to-transparent animate-shimmer"></div>
+                      </div>
+                      <div className="h-4 bg-gradient-to-r from-black/15 to-gray-400/25 dark:from-white/15 dark:to-gray-500/25 rounded w-4/6 animate-pulse relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 dark:via-white/5 to-transparent animate-shimmer"></div>
                       </div>
                     </div>
@@ -797,6 +861,28 @@ const ServiceDetailPage: React.FC = () => {
     { label: service.title || 'Service' }
   ];
 
+  if (showLoginPrompt) {
+    return (
+      <div className="min-h-screen bg-black to-purple-50 dark:bg-black  flex flex-col">
+        <div className="flex-1 flex items-center justify-center mt-16">
+          <div className="text-center">
+        <p className="text-black dark:text-white mb-4">Please log in to access your profile.</p>
+        <Button
+          onClick={() => {
+        localStorage.setItem('RedirectAfterLogin', window.location.pathname);
+        navigate('/signin');
+        setShowLoginPrompt(false);
+          }}
+          className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-full"
+        >
+          Log In
+        </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-black dark:via-gray-950 dark:to-black flex flex-col relative overflow-hidden">
       {/* Homepage-style Background with Grid Pattern */}
@@ -861,12 +947,6 @@ const ServiceDetailPage: React.FC = () => {
                     title="Add to wishlist"
                   >
                     <Heart className={cn("w-4 h-4", isWishlisted && "fill-current")} />
-                  </button>
-                  <button
-                    className="p-3 rounded-full bg-white/70 dark:bg-black/30 backdrop-blur-md border border-white/5 dark:border-white/5 text-black dark:text-white hover:bg-white dark:hover:bg-black/50 transition-all duration-300 hover:scale-110 shadow-lg"
-                    title="Share service"
-                  >
-                    <Share2 className="w-4 h-4" />
                   </button>
                   <button
                     className="p-3 rounded-full bg-white/70 dark:bg-black/30 backdrop-blur-md border border-white/5 dark:border-white/5 text-black dark:text-white hover:bg-white dark:hover:bg-black/50 transition-all duration-300 hover:scale-110 shadow-lg"
@@ -1085,12 +1165,94 @@ const ServiceDetailPage: React.FC = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Current Schedule Section */}
+                  {currentSchedules.length > 0 && (
+                    <div className="mt-6 bg-white/60 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-white/20 dark:border-white/15 shadow-lg">
+                      <h3 className="text-lg font-semibold text-black dark:text-white mb-4 flex items-center">
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Confirmed Schedule
+                      </h3>
+                      {scheduleLoading ? (
+                        <div className="flex justify-center py-4">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-black dark:bg-white rounded-full animate-pulse"></div>
+                            <div className="w-2 h-2 bg-black dark:bg-white rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                            <div className="w-2 h-2 bg-black dark:bg-white rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Desktop Table View */}
+                          <div className="hidden md:block bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-xl border border-white/20 dark:border-white/15 overflow-hidden">
+                            <table className="w-full text-sm">
+                              <thead className="bg-white/70 dark:bg-black/50">
+                                <tr>
+                                  <th className="px-4 py-3 text-left text-black dark:text-white font-semibold">Start Time</th>
+                                  <th className="px-4 py-3 text-left text-black dark:text-white font-semibold">End Time</th>
+                                  <th className="px-4 py-3 text-left text-black dark:text-white font-semibold">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {currentSchedules.map((schedule, index) => (
+                                  <tr key={index} className="border-t border-white/20 dark:border-white/15">
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                      {new Date(schedule.startTime).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                      {new Date(schedule.endTime).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        Confirmed
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Mobile Card View */}
+                          <div className="md:hidden space-y-3">
+                            {currentSchedules.map((schedule, index) => (
+                              <div key={index} className="bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-xl border border-white/20 dark:border-white/15 p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Confirmed
+                                  </span>
+                                </div>
+                                <div className="space-y-2">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Start:</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300 text-right">
+                                      {new Date(schedule.startTime).toLocaleDateString()} <br />
+                                      <span className="text-xs">{new Date(schedule.startTime).toLocaleTimeString()}</span>
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">End:</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300 text-right">
+                                      {new Date(schedule.endTime).toLocaleDateString()} <br />
+                                      <span className="text-xs">{new Date(schedule.endTime).toLocaleTimeString()}</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Right Column - Unified Booking & Provider Card */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-6 pb-10">
               {/* Unified Glass Morphism Card */}
               <div className="relative">
                 <div 
@@ -1117,7 +1279,7 @@ const ServiceDetailPage: React.FC = () => {
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center border-2 border-white dark:border-black">
                               <svg className="w-3.5 h-3.5 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
+                            </svg>
                             </div>
                           )}
                         </div>
@@ -1131,22 +1293,26 @@ const ServiceDetailPage: React.FC = () => {
                         </p>
 
                         {/* Contact Information */}
-                        {(provider?.user?.email || provider?.user?.phone) && (
-                          <div className="mt-4 w-full space-y-2">
-                            {provider?.user?.email && (
-                              <div className="flex items-center justify-center gap-2 text-sm bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-xl px-4 py-2.5 border border-white/20 dark:border-white/15">
-                                <Mail className="w-4 h-4 text-black dark:text-white" />
-                                <span className="text-gray-700 dark:text-gray-300 truncate">{provider.user.email}</span>
-                              </div>
-                            )}
-                            {provider?.user?.phone && (
-                              <div className="flex items-center justify-center gap-2 text-sm bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-xl px-4 py-2.5 border border-white/20 dark:border-white/15">
-                                <Phone className="w-4 h-4 text-black dark:text-white" />
-                                <span className="text-gray-700 dark:text-gray-300">{provider.user.phone}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        {(() => {
+                          return (provider?.user?.email || provider?.user?.phone) && (
+                            <div className="mt-4 w-full space-y-2">
+                              {provider?.user?.email && (
+                                <div className="flex flex-col items-center justify-center gap-1 text-sm bg-white/50 dark:bg-black/30 backdrop-blur-md rounded-xl px-4 py-2.5 border border-white/20 dark:border-white/15">
+                                  <div className="flex items-center gap-2">
+                                    <Mail className="w-4 h-4 text-black dark:text-white" />
+                                    <span className="text-gray-700 dark:text-gray-300 truncate">{provider.user.email}</span>
+                                  </div>
+                                  {provider?.user?.phone && (
+                                    <div className="flex items-center gap-2">
+                                      <Phone className="w-4 h-4 text-black dark:text-white" />
+                                      <span className="text-gray-700 dark:text-gray-300">{provider.user.phone}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         {/* Stats */}
                         {((provider?.averageRating !== undefined && provider?.averageRating !== null) || (provider?.services?.length !== undefined && provider?.services?.length !== null)) && (
@@ -1172,7 +1338,13 @@ const ServiceDetailPage: React.FC = () => {
 
                         {/* View Profile Button */}
                         <button
-                          onClick={() => navigate(`/provider/${provider.id}`)}
+                          onClick={() => {
+                            if (!isLoggedIn || !user) {
+                              setShowLoginPrompt(true);
+                              return;
+                            }
+                            navigate(`/provider/${provider.id}`);
+                          }}
                           className="mt-4 text-sm text-black dark:text-white hover:underline flex items-center gap-1"
                         >
                           View Full Profile
@@ -1243,9 +1415,56 @@ const ServiceDetailPage: React.FC = () => {
                     </button>
                   </div>
 
+                  {/* QR Code Section */}
+                  <div className="pt-6 border-t border-white/20 dark:border-white/20">
+                    <h4 className="text-sm font-semibold text-black dark:text-white mb-4 flex items-center">
+                      <QrCode className="w-4 h-4 mr-2" />
+                      QR Code
+                    </h4>
+                    <div className="flex flex-col items-center space-y-3">
+                      {/* QR Code */}
+                      <div className="bg-white/60 dark:bg-black/30 backdrop-blur-xl p-4 rounded-xl border border-white/20 dark:border-white/15 shadow-sm">
+                        <div className="w-24 h-24 flex items-center justify-center">
+                          {qrCodeUrl ? (
+                            <QRCode
+                              value={qrCodeUrl}
+                              size={96}
+                              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                              viewBox={`0 0 256 256`}
+                              fgColor="currentColor"
+                              bgColor="transparent"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-black/20 dark:bg-white/20 rounded animate-pulse"></div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={handleDownloadQR}
+                          className="flex items-center space-x-1 bg-white/60 dark:bg-black/30 backdrop-blur-xl hover:bg-white/80 dark:hover:bg-black/50 text-black dark:text-white border border-white/20 dark:border-white/15 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 text-xs"
+                          title="Download QR Code"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span>Download</span>
+                        </button>
+                        <button
+                          onClick={handleShareService}
+                          className="flex items-center space-x-1 bg-white/60 dark:bg-black/30 backdrop-blur-xl hover:bg-white/80 dark:hover:bg-black/50 text-black dark:text-white border border-white/20 dark:border-white/15 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 text-xs"
+                          title="Share Service"
+                        >
+                          <Share2 className="w-3 h-3" />
+                          <span>Share</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Working Hours Section */}
                   {service.workingTime && service.workingTime.length > 0 && (
-                    <div className="pt-6 border-t border-white/20 dark:border-white/20">
+                    <div >
                       <h4 className="text-sm font-semibold text-black dark:text-white mb-3 flex items-center">
                         <Clock className="w-4 h-4 mr-2" />
                         Working Hours
@@ -1334,7 +1553,7 @@ const ServiceDetailPage: React.FC = () => {
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center border-2 border-white dark:border-black shadow-lg">
                               <svg className="w-3.5 h-3.5 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
+                            </svg>
                             </div>
                           </div>
                           <div className="flex-1">

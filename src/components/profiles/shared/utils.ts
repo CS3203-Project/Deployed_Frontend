@@ -42,13 +42,9 @@ export const cn = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
 // Toast notification utilities
 export const showSuccessToast = (message: string) => {
-  // Implementation would be here - using react-hot-toast or similar
-  console.log('Success:', message);
 };
 
 export const showErrorToast = (message: string) => {
-  // Implementation would be here - using react-hot-toast or similar
-  console.log('Error:', message);
 };
 
 // Export icons for use in other components

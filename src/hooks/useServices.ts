@@ -26,7 +26,6 @@ export const useServices = (params?: {
   const fetchServices = useCallback(async () => {
     // Prevent multiple simultaneous requests
     if (isLoadingRef.current) {
-      console.log('Skipping fetch - already loading');
       return;
     }
 
@@ -44,18 +43,14 @@ export const useServices = (params?: {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching services with params:', params);
       const response = await serviceApi.getServices(params, abortControllerRef.current?.signal);
-      console.log('API Response received successfully');
       
       // Check if component is still mounted and request wasn't aborted
       if (!isMountedRef.current) {
-        console.log('Component unmounted, skipping state update');
         return;
       }
       
       if (response.success && Array.isArray(response.data)) {
-        console.log(`Setting ${response.data.length} services`);
         setServices(response.data);
         setError(null);
       } else {
@@ -66,13 +61,11 @@ export const useServices = (params?: {
     } catch (err) {
       // Check if this is a canceled request - don't treat as error
       if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
-        console.log('Request was canceled, this is normal behavior');
         return;
       }
       
       // Only update state if component is still mounted
       if (!isMountedRef.current) {
-        console.log('Component unmounted, skipping error state update');
         return;
       }
       
@@ -90,18 +83,15 @@ export const useServices = (params?: {
   }, [params?.providerId, params?.categoryId, params?.isActive, params?.skip, params?.take]);
 
   const refetch = useCallback(() => {
-    console.log('Manual refetch triggered');
     fetchServices();
   }, [fetchServices]);
 
   useEffect(() => {
     isMountedRef.current = true;
-    console.log('useServices effect triggered');
     fetchServices();
 
     // Cleanup function to abort ongoing requests and mark component as unmounted
     return () => {
-      console.log('useServices cleanup');
       isMountedRef.current = false;
       isLoadingRef.current = false;
       if (abortControllerRef.current) {

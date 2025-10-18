@@ -118,10 +118,8 @@ export default function Provider() {
     try {
       setLoading(true);
       
-      console.log('Provider ID from URL:', providerId); // Debug log
       
       if (!providerId) {
-        console.log('No provider ID found'); // Debug log
         toast.error('Provider ID is required');
         navigate('/');
         return;
@@ -129,9 +127,7 @@ export default function Provider() {
 
       // Fetch the specified provider's profile
       try {
-        console.log('Attempting to fetch provider profile for ID:', providerId); // Debug log
         const providerData = await userApi.getProviderById(providerId);
-        console.log('Provider data received:', providerData); // Debug log
         setProviderProfile(providerData);
         setUser(providerData.user as UserProfile);
         

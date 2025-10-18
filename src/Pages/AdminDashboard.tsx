@@ -798,7 +798,6 @@ const AdminDashboard: React.FC = () => {
         const serviceProvidersResponse = await adminApi.getAllServiceProviders();
         if (serviceProvidersResponse.success) {
           setServiceProviders(serviceProvidersResponse.data);
-          console.log('Service providers loaded:', serviceProvidersResponse.data.length);
         } else {
           console.error('Failed to fetch service providers:', serviceProvidersResponse.message);
           showErrorToast('Failed to load service providers');
@@ -813,7 +812,6 @@ const AdminDashboard: React.FC = () => {
         const customerCountResponse = await adminApi.getCustomerCount();
         if (customerCountResponse.success) {
           setCustomerCount(customerCountResponse.data.count);
-          console.log('Customer count loaded:', customerCountResponse.data.count);
         } else {
           console.error('Failed to fetch customer count:', customerCountResponse.message);
         }
