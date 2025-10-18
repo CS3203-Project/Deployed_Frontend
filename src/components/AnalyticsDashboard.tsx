@@ -88,7 +88,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isOpen, onClose
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState<'general' | 'payments'>('general');
-  const [dateRange, setDateRange] = useState('30days');
 
   const fetchAnalyticsData = useCallback(async () => {
     try {
@@ -240,7 +239,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isOpen, onClose
         paymentsResponse
       ] = await Promise.all([
         adminApi.getPaymentStatistics(),
-        adminApi.getRevenueChart(dateRange),
+        adminApi.getRevenueChart(),
         adminApi.getTopProviders(10),
         adminApi.getRecentPayments(20)
       ]);
@@ -268,7 +267,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isOpen, onClose
     } finally {
       setLoading(false);
     }
-  }, [dateRange]);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -278,7 +277,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isOpen, onClose
         fetchPaymentAnalyticsData();
       }
     }
-  }, [isOpen, activeTab, dateRange, fetchAnalyticsData, fetchPaymentAnalyticsData]);
+  }, [isOpen, activeTab, fetchAnalyticsData, fetchPaymentAnalyticsData]);
 
   const refreshData = () => {
     if (activeTab === 'general') {
@@ -378,19 +377,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isOpen, onClose
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            {activeTab === 'payments' && (
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={loading}
-              >
-                <option value="7days">Last 7 Days</option>
-                <option value="30days">Last 30 Days</option>
-                <option value="90days">Last 90 Days</option>
-                <option value="1year">Last Year</option>
-              </select>
-            )}
             <Button
               onClick={refreshData}
               variant="outline"
