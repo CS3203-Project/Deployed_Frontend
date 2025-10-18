@@ -72,10 +72,9 @@ const BrowseServicesEnhanced: React.FC = () => {
         includeChildren: true
       });
       
-      console.log('Categories API response:', response);
+
       
       if (response.success) {
-        console.log('Categories data:', response.data);
         setState(prev => ({ 
           ...prev, 
           categories: response.data,
@@ -110,7 +109,6 @@ const BrowseServicesEnhanced: React.FC = () => {
     const handleWindowFocus = () => {
       // Only refresh if we have categories already (not on initial load)
       if (state.categories.length > 0 && !state.loading && !state.refreshing) {
-        console.log('Window focused, refreshing category data...');
         fetchCategories(true);
       }
     };

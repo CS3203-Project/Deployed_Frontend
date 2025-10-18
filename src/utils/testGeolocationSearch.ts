@@ -20,7 +20,6 @@ export class GeolocationSearchTester {
    * Run all geolocation search tests
    */
   async runAllTests(): Promise<TestResult[]> {
-    console.log('🚀 Starting Geolocation Search Tests...');
     
     this.results = [];
     
@@ -31,7 +30,6 @@ export class GeolocationSearchTester {
     await this.testGeocoding();
     await this.testBrowserGeolocation();
     
-    console.log('✅ All tests completed');
     this.printSummary();
     
     return this.results;
@@ -41,8 +39,6 @@ export class GeolocationSearchTester {
    * Test hybrid search (query + location)
    */
   private async testHybridSearch(): Promise<void> {
-    console.log('Testing hybrid search (query + location)...');
-    
     try {
       const params: HybridSearchParams = {
         query: 'web development',
@@ -76,8 +72,6 @@ export class GeolocationSearchTester {
    * Test semantic search only (query without location)
    */
   private async testSemanticOnlySearch(): Promise<void> {
-    console.log('Testing semantic search only...');
-    
     try {
       const params: HybridSearchParams = {
         query: 'graphic design',
@@ -106,8 +100,6 @@ export class GeolocationSearchTester {
    * Test location-only search (no query)
    */
   private async testLocationOnlySearch(): Promise<void> {
-    console.log('Testing location-only search...');
-    
     try {
       const params: HybridSearchParams = {
         location: {
@@ -139,8 +131,6 @@ export class GeolocationSearchTester {
    * Test location utility functions
    */
   private async testLocationUtils(): Promise<void> {
-    console.log('Testing location utilities...');
-    
     try {
       // Test distance calculation
       const distance = hybridSearchApi.calculateDistance(40.7128, -74.0060, 40.7589, -73.9851);
@@ -163,8 +153,6 @@ export class GeolocationSearchTester {
    * Test geocoding functionality
    */
   private async testGeocoding(): Promise<void> {
-    console.log('Testing geocoding...');
-    
     try {
       const response = await hybridSearchApi.geocodeAddress('New York, NY');
       
@@ -186,8 +174,6 @@ export class GeolocationSearchTester {
    * Test browser geolocation API
    */
   private async testBrowserGeolocation(): Promise<void> {
-    console.log('Testing browser geolocation...');
-    
     try {
       if (!navigator.geolocation) {
         this.addResult('Browser Geolocation', false, 'Geolocation not supported');
@@ -228,7 +214,6 @@ export class GeolocationSearchTester {
     this.results.push({ testName, success, error, data });
     
     const emoji = success ? '✅' : '❌';
-    console.log(`${emoji} ${testName}: ${success ? 'PASS' : 'FAIL'}`);
     if (error) console.log(`   Error: ${error}`);
     if (data) console.log(`   Data:`, data);
   }
@@ -240,14 +225,9 @@ export class GeolocationSearchTester {
     const passed = this.results.filter(r => r.success).length;
     const total = this.results.length;
     
-    console.log('\n📊 Test Summary:');
-    console.log(`   Passed: ${passed}/${total}`);
-    console.log(`   Success Rate: ${((passed / total) * 100).toFixed(1)}%`);
     
     if (passed === total) {
-      console.log('🎉 All tests passed! Geolocation search is ready to use.');
     } else {
-      console.log('⚠️  Some tests failed. Please check the implementation.');
     }
   }
 }
@@ -256,7 +236,6 @@ export class GeolocationSearchTester {
  * Test specific search scenarios
  */
 export const testSearchScenarios = async () => {
-  console.log('🎯 Testing specific search scenarios...');
   
   const scenarios = [
     {
@@ -295,22 +274,15 @@ export const testSearchScenarios = async () => {
 
   for (const scenario of scenarios) {
     try {
-      console.log(`Testing: ${scenario.name}`);
       const response = await hybridSearchApi.searchServices(scenario.params);
-      console.log(`  Results: ${response.data.count} services found`);
-      console.log(`  Search Type: ${response.data.searchType}`);
-      
       if (response.data.results.length > 0) {
         const firstResult = response.data.results[0];
-        console.log(`  First Result: ${firstResult.title}`);
         if (firstResult.distance_km !== undefined) {
-          console.log(`  Distance: ${hybridSearchApi.formatDistance(firstResult.distance_km)}`);
         }
       }
     } catch (error) {
       console.error(`  Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    console.log('');
   }
 };
 

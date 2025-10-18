@@ -97,7 +97,6 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         // Get reviews received by this customer (reviews given TO this customer)
         try {
           const reviewsRes = await apiClient.get(`/reviews/user/${customerId}/received`);
-          console.log('Reviews API response:', reviewsRes.data);
           const reviewData = reviewsRes.data.reviews || reviewsRes.data || [];
           setReviews(reviewData);
         } catch (error) {

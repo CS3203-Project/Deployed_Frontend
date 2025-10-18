@@ -75,7 +75,6 @@ const ServiceDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuth();
 
-  console.log('ServiceDetailPage - serviceId from URL:', serviceId);
   const [service, setService] = useState<DetailedService | null>(null);
   const [provider, setProvider] = useState<ProviderProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -171,21 +170,9 @@ const ServiceDetailPage: React.FC = () => {
 
   // Transform ServiceResponse (API data) to DetailedService format
   const transformApiService = (apiService: ServiceResponse): DetailedService => {
-    console.log('🔄 Transforming API service data:', apiService);
-    console.log('🏢 Service provider data from API:');
-    console.log('  - Provider ID:', apiService.provider?.id);
-    console.log('  - Provider User Data:', apiService.provider?.user);
+
     if (apiService.provider?.user) {
-      console.log('    - First Name:', apiService.provider.user.firstName);
-      console.log('    - Last Name:', apiService.provider.user.lastName);
-      console.log('    - Email:', apiService.provider.user.email);
-      console.log('    - Image URL:', apiService.provider.user.imageUrl);
-      console.log('    - Location:', (apiService.provider.user as any).location);
-      console.log('    - Phone:', (apiService.provider.user as any).phone);
     }
-    console.log('  - Average Rating:', apiService.provider?.averageRating);
-    console.log('  - Total Reviews:', apiService.provider?.totalReviews);
-    
     return {
       id: apiService.id,
       title: apiService.title || 'Untitled Service',
@@ -230,26 +217,7 @@ const ServiceDetailPage: React.FC = () => {
   const fetchProviderDetails = async (providerId: string) => {
     try {
       setProviderLoading(true);
-      console.log('🔍 Fetching provider details for ID:', providerId);
       const providerData = await userApi.getProviderById(providerId);
-      console.log('✅ Provider data received:', providerData);
-      console.log('📋 Provider fields breakdown:');
-      console.log('  - Provider ID:', providerData?.id);
-      console.log('  - User ID:', providerData?.userId);
-      console.log('  - Bio:', providerData?.bio);
-      console.log('  - Skills:', providerData?.skills);
-      console.log('  - Qualifications:', providerData?.qualifications);
-      console.log('  - Logo URL:', providerData?.logoUrl);
-      console.log('  - Average Rating:', providerData?.averageRating);
-      console.log('  - Total Reviews:', providerData?.totalReviews);
-      console.log('  - Is Verified:', providerData?.isVerified);
-      console.log('User details (via relation):');
-      console.log('  - First Name:', providerData?.user?.firstName);
-      console.log('  - Last Name:', providerData?.user?.lastName);
-      console.log('  - Email:', providerData?.user?.email);
-      console.log('  - Image URL:', providerData?.user?.imageUrl);
-      console.log('  - Location:', providerData?.user?.location);
-      console.log('  - Phone:', providerData?.user?.phone);
       setProvider(providerData);
     } catch (error) {
       console.error('❌ Failed to fetch provider details:', error);
@@ -287,12 +255,9 @@ const ServiceDetailPage: React.FC = () => {
   const fetchCurrentSchedules = async (serviceId: string) => {
     try {
       setScheduleLoading(true);
-      console.log('Fetching schedules for service:', serviceId);
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/schedule/current/${serviceId}`);
-      console.log('Schedule API response status:', response.status);
       if (response.ok) {
         const data = await response.json();
-        console.log('Schedule API response data:', data);
         if (data.success) {
           setCurrentSchedules(data.data);
         }
@@ -325,7 +290,6 @@ const ServiceDetailPage: React.FC = () => {
         try {
           response = await serviceApi.getServiceById(serviceId);
         } catch (directError) {
-          console.log('Failed to get service by ID, trying conversation ID:', directError);
           // If direct service fetch fails, try getting service by conversation ID
           try {
             response = await serviceApi.getServiceByConversationId(serviceId);
@@ -348,7 +312,6 @@ const ServiceDetailPage: React.FC = () => {
           await fetchServiceReviews(response.data.id);
 
           // Fetch current schedules
-          console.log('About to fetch schedules for service:', response.data.id);
           await fetchCurrentSchedules(response.data.id);
         } else {
           toast.error('Service not found');
@@ -367,16 +330,11 @@ const ServiceDetailPage: React.FC = () => {
   }, [serviceId, navigate]);
 
   const handleContactProvider = () => {
-    console.log('Service object:', service); // Debug log
-    console.log('Provider ID:', service?.provider?.id); // Debug log
-    
     if (service?.provider?.id) {
-      console.log('Navigating to provider page with ID:', service.provider.id); // Debug log
       // Navigate to the specific provider page with the provider ID
       navigate(`/provider/${service.provider.id}`);
     } else {
       // When provider ID is not available, show an error
-      console.log('No provider ID available'); // Debug log
       toast.error('Provider information not available');
     }
   };
@@ -394,12 +352,6 @@ const ServiceDetailPage: React.FC = () => {
       return;
     }
 
-    // Debug logging
-    console.log('=== BOOK NOW DEBUG ===');
-    console.log('Current user:', user);
-    console.log('Current user ID:', user.id);
-    console.log('Service provider ID:', service.provider.id);
-    console.log('Service:', service);
 
     // Validate user IDs
     if (!user.id) {
@@ -418,14 +370,11 @@ const ServiceDetailPage: React.FC = () => {
     if (provider?.userId) {
       // We have the provider details, use the userId
       providerUserId = provider.userId;
-      console.log('Using provider user ID from provider details:', providerUserId);
     } else {
       // We need to fetch the provider to get the userId
       try {
-        console.log('Fetching provider details to get user ID...');
         const providerData = await userApi.getProviderById(service.provider.id);
         providerUserId = providerData.userId;
-        console.log('Retrieved provider user ID:', providerUserId);
       } catch (error) {
         console.error('Failed to fetch provider details:', error);
         toast.error('Unable to get provider information. Please try again.');
@@ -437,14 +386,12 @@ const ServiceDetailPage: React.FC = () => {
       setBookingLoading(true);
       
       // Check if conversation already exists (use provider's user ID, not provider ID)
-      console.log('Checking for existing conversation between:', user.id, 'and', providerUserId);
       const existingConversation = await messagingApi.findConversationByParticipants(
         user.id, 
         providerUserId
       );
 
       if (existingConversation) {
-        console.log('Found existing conversation:', existingConversation);
         toast.success('Opening existing conversation...');
         navigate(`/conversation/${existingConversation.id}`);
         return;
@@ -457,15 +404,11 @@ const ServiceDetailPage: React.FC = () => {
         serviceId: service.id // Pass the serviceId to backend
       };
 
-      console.log('Creating conversation with data:', conversationData);
-
       const conversation = await messagingApi.createConversation(conversationData);
       
-      console.log('Conversation created:', conversation);
       
       // Send initial message (use provider's user ID, not provider ID)
       const initialMessage = `Hi! I'm interested in your service: ${service.title}`;
-      console.log('Sending initial message...');
       
       await messagingApi.sendMessage({
         content: initialMessage,
@@ -474,7 +417,6 @@ const ServiceDetailPage: React.FC = () => {
         conversationId: conversation.id
       });
 
-      console.log('Initial message sent successfully');
       
       toast.success('Conversation started! Redirecting to messages...');
       
@@ -495,10 +437,6 @@ const ServiceDetailPage: React.FC = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       
       if (errorMessage.includes('User not found')) {
-        console.log('=== USER NOT FOUND ERROR ===');
-        console.log('This suggests the user IDs are not valid in the backend database');
-        console.log('User ID:', user.id);
-        console.log('Provider User ID:', providerUserId);
         debugMessagingState();
         toast.error('User validation failed. Please try logging out and back in.');
       } else if (errorMessage.includes('conversation')) {
@@ -532,12 +470,10 @@ const ServiceDetailPage: React.FC = () => {
   };
 
   const handlePaymentSuccess = (paymentId: string) => {
-    console.log('Payment completed:', paymentId);
     // The PaymentModal will handle showing the success popup and navigation to profile
   };
 
   const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error);
     // The PaymentModal will handle showing the error popup
   };
 
@@ -1358,7 +1294,6 @@ const ServiceDetailPage: React.FC = () => {
 
                         {/* Contact Information */}
                         {(() => {
-                          console.log('Provider phone:', provider?.user?.phone);
                           return (provider?.user?.email || provider?.user?.phone) && (
                             <div className="mt-4 w-full space-y-2">
                               {provider?.user?.email && (

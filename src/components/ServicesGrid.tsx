@@ -9,7 +9,6 @@ interface ServicesGridProps {
 }
 
 const ServicesGrid: React.FC<ServicesGridProps> = ({ services, loading, error }) => {
-  console.log('ServicesGrid render:', { servicesCount: services?.length, loading, error });
 
   if (loading) {
     return (
@@ -84,18 +83,6 @@ const ServicesGrid: React.FC<ServicesGridProps> = ({ services, loading, error })
             ? parseFloat(service.averageRating) 
             : 0;
 
-        // Debug logging for rating
-        console.log('Service rating data:', {
-          serviceId: service.id,
-          title: service.title,
-          rawAverageRating: service.averageRating,
-          rawAverageRatingType: typeof service.averageRating,
-          parsedAverageRating: averageRating,
-          reviewCount: reviewCount,
-          rawReviewCount: service.reviewCount,
-          _countReviews: service._count?.reviews,
-          willPassToCard: { rating: averageRating, reviewCount }
-        });
 
         return (
           <PlaceCard

@@ -67,9 +67,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         },
       };
 
-      console.log('Creating payment intent with data:', paymentIntentData);
       const response = await paymentApi.createPaymentIntent(paymentIntentData);
-      console.log('Payment intent response:', response);
 
       // The backend should return { clientSecret: "pi_xxx_secret_xxx" }
       const clientSecret = response.clientSecret;
@@ -78,7 +76,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('No client secret received from server');
       }
 
-      console.log('Using client secret:', clientSecret);
 
       // Confirm payment with Stripe
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
@@ -93,7 +90,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         onError?.(error.message || 'Payment failed');
         toast.error('Payment failed: ' + error.message);
       } else if (paymentIntent.status === 'succeeded') {
-        console.log('Payment succeeded:', paymentIntent);
         setPaymentSuccess(true);
         onSuccess?.(paymentIntent.id);
         toast.success('Payment successful!');

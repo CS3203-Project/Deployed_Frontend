@@ -157,7 +157,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
       // Check if WebSocket is connected, use WebSocket if available, fallback to REST
       if (webSocket.isConnected) {
-        console.log('📤 Sending message via WebSocket');
         
         // Prepare user data for email notifications
         let senderName: string | undefined;
@@ -196,17 +195,10 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
           recipientEmail,
         });
         
-        console.log('📧 WebSocket message sent with email data:', {
-          senderName,
-          senderEmail,
-          recipientName,
-          recipientEmail,
-        });
         
         // Note: The actual message will be added to the UI when we receive the 'message:sent' confirmation
         // No need to optimistically add here since we handle it in the sent confirmation
       } else {
-        console.log('📤 Sending message via REST API (WebSocket not connected)');
         // Fallback to REST API
         const newMessage = await messagingApi.sendMessage({
           content,
@@ -247,14 +239,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
       setLoading(true);
       setError(null);
       
-      console.log('Starting new conversation with user:', otherUserId);
-      
-      // Check if conversation already exists
-      console.log('Checking for existing conversation...');
       const existingConversation = await messagingApi.findConversationByParticipants(userId, otherUserId);
       
       if (existingConversation) {
-        console.log('Found existing conversation:', existingConversation);
         // Find the full conversation data
         const fullConversation = conversations.find(conv => conv.id === existingConversation.id);
         if (fullConversation) {
@@ -264,13 +251,11 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
       }
       
       // Create new conversation
-      console.log('Creating new conversation...');
       const newConversation = await messagingApi.createConversation({
         userIds: [userId, otherUserId],
         title,
       });
       
-      console.log('Created new conversation:', newConversation);
       
       // Convert to ConversationWithLastMessage format
       const conversationWithData: ConversationWithLastMessage = {
@@ -299,16 +284,12 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
     try {
       // Check if WebSocket is connected, use WebSocket if available, fallback to REST
       if (webSocket.isConnected) {
-        console.log('📖 Marking conversation as read via WebSocket');
-        
-        // Use WebSocket for real-time read receipts
         webSocket.emit('conversation:mark-read', {
           conversationId,
           userId,
         });
         
       } else {
-        console.log('📖 Marking conversation as read via REST API (WebSocket not connected)');
         
         // Fallback to REST API
         await messagingApi.markConversationAsRead(conversationId, userId);
@@ -394,11 +375,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle incoming messages (from other users only)
     const handleMessageReceived = (messageData: MessageResponse) => {
-      console.log('📥 Received real-time message:', messageData);
       
       // Only handle messages from other users (not our own messages)
       if (messageData.fromId === userId) {
-        console.log('Ignoring own message in received handler');
         return;
       }
       
@@ -425,11 +404,8 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle message sent confirmation (our own messages only)
     const handleMessageSent = (messageData: MessageResponse) => {
-      console.log('📤 Message sent confirmation:', messageData);
-      
       // Only handle our own messages in sent confirmation
       if (messageData.fromId !== userId) {
-        console.log('Ignoring other user message in sent handler');
         return;
       }
       
@@ -466,7 +442,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle read receipts
     const handleMessageReadReceipt = (data: { messageId: string; readBy: string; readAt: string }) => {
-      console.log('📖 Message read receipt received:', data);
       // Update message status in current conversation
       if (activeConversation) {
         setMessages(prev => 
@@ -481,7 +456,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle conversation marked as read confirmation
     const handleConversationMarkedRead = (data: { conversationId: string; success: boolean }) => {
-      console.log('📖 Conversation marked as read:', data);
       if (data.success) {
         // Update conversations list
         setConversations(prev =>
@@ -498,7 +472,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle auto-read notification
     const handleMessageAutoRead = (data: { messageId: string; conversationId: string }) => {
-      console.log('📖 Message auto-marked as read:', data);
       // Update message read status in current messages
       if (activeConversation && data.conversationId === activeConversation.id) {
         setMessages(prev => 
@@ -513,13 +486,11 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
 
     // Handle online users list
     const handleOnlineUsersList = (userIds: string[]) => {
-      console.log('👥 Online users updated:', userIds);
       setOnlineUsers(userIds);
     };
 
     // Handle real-time user online status changes
     const handleUserOnline = (data: { userId: string; status: 'online' }) => {
-      console.log('🟢 User came online:', data.userId);
       setOnlineUsers(prev => {
         if (!prev.includes(data.userId)) {
           return [...prev, data.userId];
@@ -529,7 +500,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
     };
 
     const handleUserOffline = (data: { userId: string; status: 'offline' }) => {
-      console.log('🔴 User went offline:', data.userId);
       setOnlineUsers(prev => prev.filter(id => id !== data.userId));
     };
 
@@ -582,7 +552,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children, 
   // Ensure user joins and enters conversation on connect or when activeConversation changes
   useEffect(() => {
     if (webSocket.isConnected && userId && activeConversation?.id) {
-      console.log('🔌 Joining user and entering conversation:', userId, activeConversation.id);
       webSocket.emit('user:join', { userId });
       webSocket.emit('conversation:enter', { userId, conversationId: activeConversation.id });
     }

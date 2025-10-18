@@ -130,15 +130,12 @@ export default function Profile() {
 
   const fetchProviderServices = useCallback(async (providerId: string) => {
     try {
-      console.log('Fetching services for provider ID:', providerId);
       setServicesLoading(true);
       const response = await serviceApi.getServices({ providerId });
-      console.log('Services API response:', response);
       if (response.success) {
-        console.log('Services data:', response.data);
+        
         setServices(response.data);
       } else {
-        console.log('Services API returned unsuccessful response:', response);
       }
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -154,15 +151,15 @@ export default function Profile() {
     
     try {
       const providerData = await userApi.getProviderProfile();
-      console.log('Provider profile data:', providerData);
+
       setProviderProfile(providerData);
       
       // Fetch services for this provider
       if (providerData.id) {
-        console.log('Fetching services for provider ID:', providerData.id);
+
         await fetchProviderServices(providerData.id);
       } else {
-        console.log('Provider data does not have an ID:', providerData);
+
       }
     } catch (error) {
       console.error('Failed to fetch provider profile:', error);
@@ -173,14 +170,12 @@ export default function Profile() {
   const fetchPaymentHistory = useCallback(async (page: number = 1) => {
     if (!user) return;
     
-    console.log('fetchPaymentHistory called for user:', user.email, 'role:', user.role);
     
     try {
       setPaymentLoading(true);
-      console.log('Calling paymentApi.getPaymentHistory...');
+
       const response = await paymentApi.getPaymentHistory(page, 10);
-      console.log('Payment history response:', response);
-      console.log('Response.payments length:', response.payments?.length || 0);
+
       setPaymentHistory(response.payments || []);
       setTotalPaymentPages(response.pagination?.pages || 1);
       setPaymentPage(response.pagination?.page || 1);
@@ -200,7 +195,6 @@ export default function Profile() {
 
     try {
       const earningsData = await paymentApi.getProviderEarnings();
-      console.log('Earnings data received:', earningsData);
       setEarnings(earningsData);
     } catch (error) {
       console.error('Failed to fetch earnings:', error);
@@ -1476,7 +1470,7 @@ export default function Profile() {
                             <option value="customer" className="bg-white dark:bg-black text-black dark:text-white">⭐ Reviews from Providers</option>
                           )}
                           {serviceReviews.length > 0 && (
-                            <option value="service" className="bg-white dark:bg-black text-black dark:text-white">🤝 Reviews from Customers</option>
+                            <option value="service" className="bg-white dark:bg-black text-black dark:text-white">Reviews from Customers</option>
                           )}
                         </select>
                         <ChevronRight className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black dark:text-white h-4 w-4 pointer-events-none rotate-90" />
@@ -2129,7 +2123,7 @@ export default function Profile() {
                             <option value="customer" className="bg-white dark:bg-black text-black dark:text-white">⭐ Reviews from Providers</option>
                           )}
                           {user.role === 'PROVIDER' && serviceReviews.length > 0 && (
-                            <option value="service" className="bg-white dark:bg-black text-black dark:text-white">🤝 Reviews from Customers</option>
+                            <option value="service" className="bg-white dark:bg-black text-black dark:text-white">Reviews from Customers</option>
                           )}
                         </select>
                         <ChevronRight className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black dark:text-white h-4 w-4 pointer-events-none rotate-90" />

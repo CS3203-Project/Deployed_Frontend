@@ -10,7 +10,6 @@ const RatingDebugPage: React.FC = () => {
     const fetchServices = async () => {
       try {
         const response = await serviceApi.getServices({ take: 10 });
-        console.log('Raw API Response:', response);
         if (response.success && response.data) {
           setServices(response.data);
         }
