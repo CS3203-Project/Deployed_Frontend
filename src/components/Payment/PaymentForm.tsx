@@ -202,10 +202,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               options={cardElementOptions}
               onChange={(e) => {
                 if (e.complete) {
+                  const value = e.value as any;
                   setCardPreview({
-                    number: '•••• •••• •••• ' + (e.value?.cardNumber?.slice(-4) || '••••'),
-                    expiry: e.value?.expiryMonth && e.value?.expiryYear 
-                      ? `${String(e.value.expiryMonth).padStart(2, '0')}/${String(e.value.expiryYear).slice(-2)}`
+                    number: '•••• •••• •••• ' + (value?.cardNumber?.slice(-4) || '••••'),
+                    expiry: value?.expiryMonth && value?.expiryYear 
+                      ? `${String(value.expiryMonth).padStart(2, '0')}/${String(value.expiryYear).slice(-2)}`
                       : 'MM/YY',
                     cvv: '•••'
                   });

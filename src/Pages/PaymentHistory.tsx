@@ -47,9 +47,9 @@ const PaymentHistory: React.FC = () => {
       setLoading(true);
       const response: PaymentHistoryResponse = await paymentApi.getPaymentHistory(page, 10);
       setPayments(response.payments);
-      setCurrentPage(response.currentPage);
-      setTotalPages(response.totalPages);
-      setTotalCount(response.totalCount);
+      setCurrentPage(response.pagination.page);
+      setTotalPages(response.pagination.pages);
+      setTotalCount(response.pagination.total);
     } catch (error) {
       console.error('Failed to fetch payment history:', error);
       toast.error('Failed to load payment history');

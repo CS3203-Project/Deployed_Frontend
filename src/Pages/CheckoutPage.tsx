@@ -43,7 +43,7 @@ const CheckoutPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await serviceApi.getServiceById(serviceId);
-        setService(response.data || response);
+        setService(response.data);
       } catch (error) {
         console.error('Failed to fetch service:', error);
         toast.error('Failed to load service details');
