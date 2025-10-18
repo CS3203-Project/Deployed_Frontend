@@ -73,5 +73,11 @@ export function validateMessageOrder(messages: MessageResponse[]): boolean {
  * Debug function to log message ordering information
  */
 export function debugMessageOrder(messages: MessageResponse[], context: string): void {
-
+  console.log(`📋 Message Order Debug [${context}]:`, {
+    count: messages.length,
+    isOrdered: validateMessageOrder(messages),
+    firstMessage: messages[0]?.createdAt,
+    lastMessage: messages[messages.length - 1]?.createdAt,
+    timestamps: messages.map(m => ({ id: m.id, createdAt: m.createdAt }))
+  });
 }

@@ -23,6 +23,8 @@ const AdminLogin: React.FC = () => {
       });
 
       if (response.success) {
+        // Login successful - redirect to admin dashboard
+        console.log('Login successful:', response.data);
         
         // Navigate to admin dashboard
         navigate('/admin');

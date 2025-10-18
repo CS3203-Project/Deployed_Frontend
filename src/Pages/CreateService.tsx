@@ -180,6 +180,7 @@ export default function CreateService() {
       });
       
       if (response.data && response.data.imageUrl) {
+        console.log(`Successfully uploaded ${file.name} to S3:`, response.data.imageUrl);
         return response.data.imageUrl;
       } else {
         throw new Error('No image URL returned from server');
@@ -221,6 +222,7 @@ export default function CreateService() {
       });
       
       if (response.data && response.data.videoUrl) {
+        console.log(`Successfully uploaded ${file.name} to S3:`, response.data.videoUrl);
         return response.data.videoUrl;
       } else {
         throw new Error('No video URL returned from server');
@@ -407,7 +409,9 @@ export default function CreateService() {
       if (formData.video) {
         showSuccessToast('Uploading video to S3...');
         try {
+          console.log(`Uploading video: ${formData.video.name}`);
           videoUrl = await uploadVideoToS3(formData.video);
+          console.log(`Successfully uploaded video to:`, videoUrl);
           showSuccessToast('Video uploaded successfully!');
         } catch (error) {
           console.error('Failed to upload video:', formData.video.name, error);
@@ -424,8 +428,10 @@ export default function CreateService() {
         for (let i = 0; i < formData.images.length; i++) {
           const file = formData.images[i];
           try {
+            console.log(`Uploading image ${i + 1}/${formData.images.length}: ${file.name}`);
             const url = await uploadImageToS3(file);
             uploadedUrls.push(url);
+            console.log(`Successfully uploaded ${file.name} to:`, url);
           } catch (error) {
             console.error('Failed to upload image:', file.name, error);
             showErrorToast(`Failed to upload ${file.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -468,6 +474,9 @@ export default function CreateService() {
         })
       };
 
+      console.log('Formatted working time:', formatWorkingHoursForAPI(formData.workingTime));
+      console.log('Sending service data:', serviceData);
+
       const response = await serviceApi.createService(serviceData);
       
       if (response.success) {
@@ -481,6 +490,7 @@ export default function CreateService() {
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { message?: string; error?: string; details?: unknown } } };
+        console.log('Full error response:', axiosError.response?.data);
         
         if (axiosError.response?.data?.message) {
           showErrorToast(axiosError.response.data.message);

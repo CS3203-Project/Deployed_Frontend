@@ -105,23 +105,23 @@ const Chatbot: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-white to-white/80 text-black rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-white to-white/80 text-black rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110"
         >
-          <MessageCircle className="w-5 h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform duration-300" />
+          <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 left-4 md:left-auto md:bottom-6 md:right-6 z-50 w-auto md:w-96 h-[400px] md:h-[500px] max-w-[calc(100vw-2rem)] md:max-w-none bg-black/20 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
+        <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px] bg-black/20 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-white/5 backdrop-blur-sm p-3 md:p-4 border-b border-white/20 flex items-center justify-between">
-            <div className="flex items-center space-x-2 md:space-x-3">
-              <div className="w-7 h-7 md:w-8 md:h-8 bg-gradient-to-r from-white to-white/80 rounded-full flex items-center justify-center">
-                <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-black" />
+          <div className="bg-white/5 backdrop-blur-sm p-4 border-b border-white/20 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-white to-white/80 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-4 h-4 text-black" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm md:text-base">Zia Assistant</h3>
+                <h3 className="text-white font-semibold">Zia Assistant</h3>
                 <p className="text-white/60 text-xs">Always here to help!</p>
               </div>
             </div>
@@ -129,22 +129,22 @@ const Chatbot: React.FC = () => {
               onClick={() => setIsOpen(false)}
               className="text-white/60 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
             >
-              <X className="w-4 h-4 md:w-5 md:h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] md:max-w-[80%] p-3 rounded-xl ${
+                  className={`max-w-[80%] p-3 rounded-xl ${
                     message.isUser
-                      ? 'bg-gradient-to-r from-white to-white/80 text-black ml-2 md:ml-4 shadow-lg'
-                      : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 mr-2 md:mr-4'
+                      ? 'bg-gradient-to-r from-white to-white/80 text-black ml-4 shadow-lg'
+                      : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 mr-4'
                   }`}
                 >
                   <div className="text-sm whitespace-pre-wrap break-words">
@@ -166,7 +166,7 @@ const Chatbot: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="text-xs px-2 py-1 md:px-3 md:py-2 bg-white/10 text-white/80 rounded-lg hover:bg-white/20 transition-all duration-200 border border-white/20 hover:border-white/40 backdrop-blur-sm"
+                      className="text-xs px-3 py-2 bg-white/10 text-white/80 rounded-lg hover:bg-white/20 transition-all duration-200 border border-white/20 hover:border-white/40 backdrop-blur-sm"
                     >
                       {suggestion}
                     </button>
@@ -178,7 +178,7 @@ const Chatbot: React.FC = () => {
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white/10 backdrop-blur-sm text-white border border-white/20 p-3 rounded-xl mr-2 md:mr-4">
+                <div className="bg-white/10 backdrop-blur-sm text-white border border-white/20 p-3 rounded-xl mr-4">
                   <div className="flex items-center space-x-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span className="text-sm">Thinking...</span>
@@ -191,7 +191,7 @@ const Chatbot: React.FC = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-3 md:p-4 border-t border-white/20 bg-white/5 backdrop-blur-sm">
+          <div className="p-4 border-t border-white/20 bg-white/5 backdrop-blur-sm">
             <div className="flex space-x-2">
               <input
                 type="text"
@@ -199,7 +199,7 @@ const Chatbot: React.FC = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about Zia..."
-                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3 md:px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:ring-2 focus:ring-white/50 backdrop-blur-sm hover:border-white/30 transition-all duration-200 text-sm md:text-base"
+                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:ring-2 focus:ring-white/50 backdrop-blur-sm hover:border-white/30 transition-all duration-200"
                 disabled={isLoading}
               />
               <button
@@ -207,7 +207,7 @@ const Chatbot: React.FC = () => {
                 disabled={!inputMessage.trim() || isLoading}
                 className="bg-gradient-to-r from-white to-white/80 text-black p-2 rounded-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg"
               >
-                <Send className="w-4 h-4 md:w-5 md:h-5" />
+                <Send className="w-5 h-5" />
               </button>
             </div>
           </div>

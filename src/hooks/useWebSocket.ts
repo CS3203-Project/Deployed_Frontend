@@ -30,9 +30,11 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
     if (!sock) return;
     const handleConnect = () => {
       setIsConnected(true);
+      console.log('✅ WebSocket connected');
     };
     const handleDisconnect = () => {
       setIsConnected(false);
+      console.log('❌ WebSocket disconnected');
     };
     sock.on('connect', handleConnect);
     sock.on('disconnect', handleDisconnect);
@@ -49,12 +51,15 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
       return; // Already connected
     }
 
+    console.log('🔌 Connecting to WebSocket:', url);
+    
     // Only connect if not already
     socketRef.current?.connect();
   }, [url, userId]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
+      console.log('🔌 Disconnecting WebSocket');
       socketRef.current.disconnect();
       setIsConnected(false);
     }

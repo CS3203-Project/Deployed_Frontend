@@ -69,12 +69,16 @@ const ConfirmationPanel: React.FC<Props> = ({ conversationId, currentUserRole, o
     let mounted = true;
     (async () => {
       try {
+        console.log('Loading confirmation record for conversation:', conversationId);
         const rec = await confirmationApi.ensure(conversationId);
+        console.log('Loaded confirmation record:', rec);
         if (mounted && conversationId === currentConversationId) {
           setRecord(rec);
           setServiceFeeInput(rec.serviceFee?.toString() || '');
           const startLocal = toLocalInput(rec.startDate);
           const endLocal = toLocalInput(rec.endDate);
+          console.log('Setting inputs - startDate:', rec.startDate, 'converted to:', startLocal);
+          console.log('Setting inputs - endDate:', rec.endDate, 'converted to:', endLocal);
           setStartDateInput(startLocal);
           setEndDateInput(endLocal);
           setHasStartTimeUnsavedChanges(false);
@@ -140,7 +144,9 @@ const ConfirmationPanel: React.FC<Props> = ({ conversationId, currentUserRole, o
         startDate: fromLocalInput(startDateInput),
       };
 
+      console.log('Saving start time:', patch);
       const updated = await confirmationApi.upsert(conversationId, patch);
+      console.log('Start time saved successfully:', updated);
       setRecord(updated);
       setStartDateInput(toLocalInput(updated.startDate));
     } catch (e) {
@@ -167,7 +173,9 @@ const ConfirmationPanel: React.FC<Props> = ({ conversationId, currentUserRole, o
         endDate: fromLocalInput(endDateInput),
       };
 
+      console.log('Saving end time:', patch);
       const updated = await confirmationApi.upsert(conversationId, patch);
+      console.log('End time saved successfully:', updated);
       setRecord(updated);
       setEndDateInput(toLocalInput(updated.endDate));
     } catch (e) {

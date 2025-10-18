@@ -39,12 +39,15 @@ export default function Homepage() {
 
     // Allow search with just query OR just location OR both
     if (!hasQuery && !hasLocation) {
+      console.log('No search query or location provided - redirecting to browse');
       navigate('/services');
       return;
     }
 
     try {
       setIsSearching(true);
+      console.log('🔍 Performing hybrid search for:', searchQuery, 'with location:', locationFilter);
+      
       const response = await hybridSearchApi.searchServices({
         query: hasQuery ? searchQuery.trim() : undefined,
         location: hasLocation ? locationFilter : undefined,
@@ -54,6 +57,8 @@ export default function Homepage() {
       });
 
       if (response.success) {
+        console.log('✅ Search results:', response.data);
+        
         // Navigate to enhanced search results page
         navigate('/search-results-enhanced', { 
           state: { 

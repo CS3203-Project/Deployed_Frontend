@@ -1,18 +1,14 @@
 import axios from 'axios';
-
-const API_URL ='https://zia-backend-ll7ny.ondigitalocean.app/api';
+import apiClient from '../api/axios';
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
     const formData = new FormData();
     formData.append('image', file);
 
-    const token = localStorage.getItem('token');
-    
-    const response = await axios.post(`${API_URL}/users/upload-image`, formData, {
+    const response = await apiClient.post('/users/upload-image', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'multipart/form-data'
       }
     });
 

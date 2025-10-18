@@ -24,14 +24,14 @@ class ChatbotAPI {
 
   constructor() {
     // Updated to point to backend service instead of communication service
-    this.baseURL = import.meta.env.DEV 
-      ? 'https://zia-backend-ll7ny.ondigitalocean.app' // Backend service port
-      : '/api'; // Production API proxy
+    this.baseURL = import.meta.env.PROD
+      ? import.meta.env.VITE_API_BASE_URL_PROD
+      : import.meta.env.VITE_API_BASE_URL;
   }
 
   async askQuestion(message: string): Promise<ChatbotResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/chatbot/ask`, {
+      const response = await fetch(`${this.baseURL}/api/chatbot/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ class ChatbotAPI {
 
   async getSuggestions(): Promise<SuggestionsResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/chatbot/suggestions`, {
+      const response = await fetch(`${this.baseURL}/api/chatbot/suggestions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

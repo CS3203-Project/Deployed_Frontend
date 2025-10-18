@@ -275,7 +275,7 @@ export default function ServiceProviderProfile() {
               setShowLocationModal={setShowLocationModal}
               isFollowing={isFollowing}
               setIsFollowing={setIsFollowing}
-              setShowBannerUpload={() => {}}
+              setShowBannerUpload={() => console.log('Banner upload requested')}
             />
           </div>
         </section>

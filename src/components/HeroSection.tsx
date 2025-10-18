@@ -103,11 +103,13 @@ const locationData: LocationData = {
   // For input Enter key
   const doSearch = async () => {
     if (!searchQuery.trim()) {
+      console.log('Empty search query');
       return;
     }
 
     try {
       setIsSearching(true);
+      console.log('🔍 Performing semantic search for:', searchQuery, 'in', selectedLocation);
       
       const response = await semanticSearchApi.searchServices({
         query: searchQuery.trim(),
@@ -116,6 +118,7 @@ const locationData: LocationData = {
       });
 
       if (response.success) {
+        console.log('✅ Search results:', response.data);
         
         // Navigate to search results page with results
         navigate('/services/search', { 

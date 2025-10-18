@@ -43,7 +43,7 @@ const CheckoutPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await serviceApi.getServiceById(serviceId);
-        setService(response.data);
+        setService(response.data || response);
       } catch (error) {
         console.error('Failed to fetch service:', error);
         toast.error('Failed to load service details');
@@ -59,6 +59,7 @@ const CheckoutPage: React.FC = () => {
   }, [serviceId, navigate]);
 
   const handlePaymentSuccess = (paymentId: string) => {
+    console.log('Payment successful:', paymentId);
     setStep('success');
     toast.success('Payment completed successfully!');
   };

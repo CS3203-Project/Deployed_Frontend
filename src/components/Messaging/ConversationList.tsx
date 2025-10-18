@@ -60,6 +60,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({ className = 
       // Fetch profiles in parallel
       const profilePromises = userIds.map(async (userId) => {
         try {
+          console.log('Fetching profile for user:', userId); // Debug log
           const profile = await userApi.getUserById(userId);
           return { userId, profile };
         } catch (error) {

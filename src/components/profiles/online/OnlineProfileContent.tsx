@@ -228,7 +228,7 @@ export default function ProfileContent({
             <div 
               key={service.id}
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1"
-              onClick={() => {}}
+              onClick={() => console.log('Service clicked:', service)}
             >
               <div className="relative aspect-w-16 aspect-h-9 bg-gray-200">
                 <img 
@@ -271,7 +271,7 @@ export default function ProfileContent({
             <div 
               key={item.id}
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1"
-              onClick={() => {}}
+              onClick={() => console.log('Portfolio clicked:', item)}
             >
               <div className="relative aspect-w-16 aspect-h-9 bg-gray-200">
                 <img 

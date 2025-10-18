@@ -47,6 +47,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 			return;
 		}
 
+		console.log('DottedSurface: Starting initialization with theme:', theme);
 
 		const SEPARATION = 150;
 		const AMOUNTX = 40;
@@ -80,7 +81,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 		renderer.domElement.style.top = '0';
 		renderer.domElement.style.left = '0';
 
+		console.log('DottedSurface: Canvas created, appending to container');
 		containerRef.current.appendChild(renderer.domElement);
+		console.log('DottedSurface: Canvas appended, children count:', containerRef.current.children.length);
 
 		// Create particles
 		const particles: THREE.Points[] = [];
@@ -176,7 +179,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 		};
 
 		// Start animation
+		console.log('DottedSurface: Starting animation loop');
 		animate();
+		console.log('DottedSurface: Animation loop started successfully');
 
 		// Cleanup function
 		return () => {

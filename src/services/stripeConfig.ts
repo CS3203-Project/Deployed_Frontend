@@ -3,7 +3,8 @@ import { loadStripe } from '@stripe/stripe-js';
 // Get the publishable key from environment variables
 const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
-
+// Debug: Log the key (first few chars only for security)
+console.log('Stripe Publishable Key:', publishableKey ? `${publishableKey.substring(0, 20)}...` : 'NOT FOUND');
 
 // Load Stripe with your publishable key
 const stripePromise = loadStripe(publishableKey);

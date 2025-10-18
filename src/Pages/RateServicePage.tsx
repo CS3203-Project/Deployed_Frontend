@@ -28,7 +28,7 @@ const RateServicePage: React.FC = () => {
           return response.data;
         }
       } catch (error) {
-
+        console.log('Failed to get service by ID, trying conversation ID:', error);
         
         // If direct service fetch fails, try getting service by conversation ID
         try {

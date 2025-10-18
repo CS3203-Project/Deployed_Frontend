@@ -39,6 +39,8 @@ export const PlaceCard = ({
   const [direction, setDirection] = useState(0);
   const navigate = useNavigate();
 
+  // Debug logging
+  console.log('PlaceCard render:', { title, rating, reviewCount });
 
   // Carousel image change handler
   const changeImage = (newDirection: number, e: React.MouseEvent) => {

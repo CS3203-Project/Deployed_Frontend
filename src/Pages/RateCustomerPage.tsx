@@ -12,7 +12,7 @@ const RateCustomerPage: React.FC = () => {
 
   // Get customerId from location.state (passed from messaging page)
   const customerId = location.state?.customerId;
-
+  console.log('Submitting review for customerId:', customerId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

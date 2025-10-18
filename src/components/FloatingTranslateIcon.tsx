@@ -80,6 +80,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
   }, [iconPosition]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log('🖱️ Mouse down event'); // Debug log
 
     // Prevent text selection and default behavior
     e.preventDefault();
@@ -95,6 +96,8 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     const initialIconX = iconPosition.x;
     const initialIconY = iconPosition.y;
     const startTime = Date.now();
+
+    console.log(`📍 Initial - Mouse: (${initialMouseX}, ${initialMouseY}), Icon: (${initialIconX}, ${initialIconY})`);
 
     // Reset any previous state and set dragging to true
     setRecentlyDragged(false); // Clear any previous state
@@ -137,6 +140,8 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       const endTime = Date.now();
       const duration = endTime - startTime;
 
+      console.log('🖱️ Mouse up - duration:', duration, 'ms, moved distance:', mouseMovedDistance, 'hasActuallyMoved:', hasActuallyMoved);
+
       // Remove event listeners FIRST
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -149,6 +154,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       // CRITICAL FIX: Handle both drag and click scenarios
       if (hasActuallyMoved) {
         // This was a real drag - set ready to translate
+        console.log('✅ Real drag detected - setting ready to translate');
         setTimeout(() => {
           setRecentlyDragged(true);
         }, 100); // 100ms delay to ensure clean state transition
@@ -159,12 +165,15 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
         }, 5000);
       } else if (duration < 200 && mouseMovedDistance < 5) {
         // This was a quick click without drag - handle it as a click
+        console.log('🖱️ Quick click detected - checking if ready to translate');
 
         // Small delay to ensure state is clean, then check if we should translate
         setTimeout(() => {
           if (recentlyDragged) {
+            console.log('✅ Click after drag - triggering translation');
             handleIconClick(upEvent as any); // Cast to React event for compatibility
           } else {
+            console.log('🚫 Click without drag - showing reminder');
             setShowDragReminder(true);
             setTimeout(() => setShowDragReminder(false), 4000);
           }
@@ -172,6 +181,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       }
 
       // Get final position after drag
+      console.log('📍 Icon positioned at:', iconPosition);
 
       // IMPORTANT: Prevent any mouseup event from triggering other handlers
       upEvent.stopPropagation();
@@ -184,6 +194,8 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    console.log('👆 Touch start event'); // Debug log
+
     // Prevent default touch behaviors (scrolling, zooming)
     e.preventDefault();
     e.stopPropagation();
@@ -198,6 +210,8 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     const initialIconX = iconPosition.x;
     const initialIconY = iconPosition.y;
     const startTime = Date.now();
+
+    console.log(`📍 Initial - Touch: (${initialTouchX}, ${initialTouchY}), Icon: (${initialIconX}, ${initialIconY})`);
 
     // Reset any previous state and set dragging to true
     setRecentlyDragged(false); // Clear any previous state
@@ -246,6 +260,8 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       const endTime = Date.now();
       const duration = endTime - startTime;
 
+      console.log('👆 Touch end - duration:', duration, 'ms, moved distance:', touchMovedDistance, 'hasActuallyMoved:', hasActuallyMoved);
+
       // Remove event listeners FIRST
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
@@ -257,6 +273,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       // Handle both drag and tap scenarios
       if (hasActuallyMoved) {
         // This was a real drag - set ready to translate
+        console.log('✅ Real touch drag detected - setting ready to translate');
         setTimeout(() => {
           setRecentlyDragged(true);
         }, 100); // 100ms delay to ensure clean state transition
@@ -267,10 +284,12 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
         }, 5000);
       } else if (duration < 200 && touchMovedDistance < 5) {
         // This was a quick tap without drag - handle it as a tap
+        console.log('👆 Quick tap detected - checking if ready to translate');
 
         // Small delay to ensure state is clean, then check if we should translate
         setTimeout(() => {
           if (recentlyDragged) {
+            console.log('✅ Tap after drag - triggering translation');
             // Create a synthetic mouse event for compatibility with handleIconClick
             const syntheticEvent = {
               clientX: initialTouchX,
@@ -280,12 +299,15 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
             };
             handleIconClick(syntheticEvent as any);
           } else {
+            console.log('🚫 Tap without drag - showing reminder');
             setShowDragReminder(true);
             setTimeout(() => setShowDragReminder(false), 4000);
           }
         }, 50);
       }
 
+      // Get final position after drag
+      console.log('📍 Icon positioned at:', iconPosition);
 
       // Prevent any default touch end behavior
       endEvent.preventDefault();
@@ -298,27 +320,33 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
 
   // Handle clicking on the floating icon to show translation of element underneath
   const handleIconClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log('👆 Icon clicked, isDragging:', isDragging, 'recentlyDragged:', recentlyDragged);
+    
     // Prevent any default behavior and event bubbling
     e.preventDefault();
     e.stopPropagation();
     
     // Don't do anything if we're currently dragging
     if (isDragging) {
+      console.log('🚫 Ignoring click during drag');
       return;
     }
     
     // CRITICAL FIX: If not recently dragged, ignore the click
     // User must drag first, then click
     if (!recentlyDragged) {
+      console.log('🚫 Not ready to translate - drag the icon first! (recentlyDragged:', recentlyDragged, ')');
       // Show a visual reminder to the user
       setShowDragReminder(true);
       setTimeout(() => setShowDragReminder(false), 4000);
       return;
     }
     
+    console.log('✅ Processing click for translation - FIRST CLICK SHOULD WORK');
     
     // Reset the recentlyDragged state since we're now processing the translation
     setRecentlyDragged(false);
+    console.log('✅ This was the expected click after drag');
 
     // Temporarily hide the floating icon for element detection
     const originalDisplay = dragRef.current?.style.display;
@@ -329,10 +357,11 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     // Get all elements at the cursor position (in case we need to check multiple)
     const x = e.clientX;
     const y = e.clientY;
+    console.log('🖱️ Cursor position:', x, y);
     
     // Get the element at the cursor position
     let targetElement = document.elementFromPoint(x, y);
-
+    console.log('🎯 Target element at cursor:', targetElement);
     
     // If first element has no text, try to find the closest parent with text
     if (targetElement && (!targetElement.textContent || targetElement.textContent.trim() === '')) {
@@ -343,6 +372,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
         if (currentElement.parentElement.textContent && 
             currentElement.parentElement.textContent.trim() !== '') {
           targetElement = currentElement.parentElement;
+          console.log('🎯 Found parent with text:', targetElement);
           break;
         }
         currentElement = currentElement.parentElement;
@@ -363,12 +393,14 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
                                targetElement.tagName === 'TEXTAREA' ||
                                targetElement.classList.contains('clickable');
 
-
+      console.log('📄 Text content:', textContent, 'isClickable:', isClickableElement);
+      console.log('🔍 Current state - recentlyDragged:', recentlyDragged, 'isDragging:', isDragging);
 
       if (textContent && textContent.length > 0) {
+        console.log('✅ Found text, showing translation');
         showTranslation(targetElement, iconPosition.x + 28, iconPosition.y);
       } else {
-
+        console.log('❌ No valid text found in primary element');
         
         // Fallback - try getting text from the element's children
         let foundTextInChild = false;
@@ -377,6 +409,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
           for (let i = 0; i < targetElement.children.length; i++) {
             const childText = targetElement.children[i].textContent?.trim() || '';
             if (childText && childText.length > 0) {
+              console.log('🔍 Found text in child element:', childText);
               showTranslation(targetElement.children[i], iconPosition.x + 28, iconPosition.y);
               foundTextInChild = true;
               break;
@@ -385,6 +418,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
         }
         
         if (!foundTextInChild) {
+          console.log('❌ No valid text found in any child elements');
           
           // Try to find text in parent elements if nothing found
           let parentElement = targetElement.parentElement;
@@ -393,6 +427,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
           while (!foundTextInChild && parentElement && maxParentAttempts > 0) {
             const parentText = parentElement.textContent?.trim() || '';
             if (parentText && parentText.length > 0) {
+              console.log('🔍 Found text in parent element:', parentText);
               showTranslation(parentElement, iconPosition.x + 28, iconPosition.y);
               foundTextInChild = true;
               break;
@@ -446,9 +481,11 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
   };
 
   const translateTextWithGemini = async (text: string, targetLanguage: string): Promise<string> => {
+    console.log('🔄 translateTextWithGemini called:', { text, targetLanguage });
 
     // For testing, we'll use a fallback mechanism to simulate translation
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    console.log('🔑 API Key status:', apiKey ? '✅ Available' : '❌ Missing');
 
     if (!apiKey) {
       console.warn('Gemini API key not found, using mock translation');
@@ -478,24 +515,26 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
       // Check if we have a mock translation for this text
       if (mockTranslations[targetLanguage]?.[text]) {
         const mockResult = mockTranslations[targetLanguage][text];
+        console.log('🔄 Mock translation result:', mockResult);
         return mockResult;
       }
 
       // Return with a prefix to show it was translated
       const mockFallback = `[${targetLanguage}] ` + text;
+      console.log('🔄 Mock fallback result:', mockFallback);
       return mockFallback;
     }
 
     try {
       const prompt = `Translate the following text to ${targetLanguage}:\n\n"${text}"\n\nProvide only the translation, no explanations or quotes.`;
-
+      console.log('📤 Sending request to Gemini API:', { prompt, targetLanguage });
 
       const requestBody = {
         contents: [{
           parts: [{ text: prompt }]
         }]
       };
-
+      console.log('📦 Request body:', requestBody);
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
@@ -505,36 +544,39 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
         body: JSON.stringify(requestBody)
       });
 
-
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
 
       const data = await response.json();
-
+      console.log('📥 Full API response:', JSON.stringify(data, null, 2));
 
       if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
         const translatedText = data.candidates[0].content.parts[0].text.trim();
-
+        console.log('✅ Translation successful:', translatedText);
         return translatedText;
       }
 
-      console.warn('No translation found in response, using fallback');
+      console.warn('⚠️ No translation found in response, using fallback');
+      console.log('⚠️ Fallback text:', text);
       return text; // Fallback
     } catch (error) {
-      console.error(' Gemini translation failed:', error);
+      console.error('❌ Gemini translation failed:', error);
+      console.log('❌ Falling back to original text:', text);
       return text; // Fallback to original text
     }
   };
 
   const showTranslation = async (element: Element, clientX: number, clientY: number) => {
-
+    console.log('🌍 showTranslation called for element:', element);
     const originalText = extractTextFromElement(element);
-
+    console.log('📝 Extracted text:', originalText);
 
     if (!originalText || originalText.length === 0) {
-
+      console.log('❌ No text to translate, aborting');
       return;
     }
 
-
+    console.log('✅ Starting translation process');
     setIsTranslating(true);
     setLoaderMinTime(true);
 
@@ -663,9 +705,11 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     // Don't proceed if we clicked on buttons (close or copy buttons)
     if ((e.target as HTMLElement).tagName === 'BUTTON' || 
         (e.target as HTMLElement).closest('button')) {
+      console.log('🖱️ Ignoring drag on button');
       return;
     }
     
+    console.log('🖱️ Starting overlay drag for:', overlayId);
     
     // Set cursor style and prevent text selection during drag
     document.body.style.userSelect = 'none';
@@ -678,12 +722,14 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     // Find the overlay being dragged
     const draggedOverlay = overlays.find(o => o.id === overlayId);
     if (!draggedOverlay) {
+      console.log('⚠️ Could not find overlay with ID:', overlayId);
       return;
     }
     
     const initialOverlayX = draggedOverlay.position.x;
     const initialOverlayY = draggedOverlay.position.y;
     
+    console.log('📍 Initial overlay position:', initialOverlayX, initialOverlayY);
     
     // Set dragging state for this overlay
     setOverlays(prev => prev.map(o => 
@@ -717,6 +763,7 @@ const FloatingTranslateIcon: React.FC<FloatingTranslateIconProps> = ({ onTransla
     };
 
     const handleMouseUp = (upEvent: MouseEvent) => {
+      console.log('🖱️ Finished overlay drag');
       
       // Clean up - remove event listeners
       document.removeEventListener('mousemove', handleMouseMove);
