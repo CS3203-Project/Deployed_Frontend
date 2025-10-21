@@ -288,7 +288,7 @@ const ServiceDetailPage: React.FC = () => {
     try {
       setScheduleLoading(true);
       console.log('Fetching schedules for service:', serviceId);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/schedule/current/${serviceId}`);
+      const response = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_API_BASE_URL_PROD : import.meta.env.VITE_API_BASE_URL}/schedule/current/${serviceId}`);
       console.log('Schedule API response status:', response.status);
       if (response.ok) {
         const data = await response.json();
